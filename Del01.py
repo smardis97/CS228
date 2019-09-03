@@ -1,3 +1,8 @@
+import sys
+
+sys.path.insert(0, '..')
+
+import Leap
 from pygameWindow import PYGAME_WINDOW
 import random
 
@@ -15,15 +20,26 @@ def perturb_circle_position():
         y -= 1
 
 
+def handle_frame(frame):
+    pass
+
 window = PYGAME_WINDOW()
 
 print(window)
 
 x, y = 400, 400
 
+controller = Leap.Controller()
+
+i = 0
+
 while True:
-    PYGAME_WINDOW.prepare(window)
-    window.draw_black_circle(x, y)
-    perturb_circle_position()
-    PYGAME_WINDOW.reveal()
+    frame = controller.frame()
+    if (len(frame.hands) > 0):
+        print "hand detected " + str(i)
+        i += 1
+#     PYGAME_WINDOW.prepare(window)
+#     window.draw_black_circle(x, y)
+#     perturb_circle_position()
+#     PYGAME_WINDOW.reveal()
 
