@@ -21,7 +21,11 @@ def perturb_circle_position():
 
 
 def handle_frame(frame):
-    pass
+    hand = frame.hands[0]
+    indexFinger = hand.fingers.finger_type(Leap.Finger.TYPE_INDEX)[0]
+    distalPhalanx = indexFinger.bone(3)
+    tip = distalPhalanx.next_joint
+    print tip
 
 window = PYGAME_WINDOW()
 
@@ -34,12 +38,11 @@ controller = Leap.Controller()
 i = 0
 
 while True:
+    PYGAME_WINDOW.prepare(window)
     frame = controller.frame()
     if (len(frame.hands) > 0):
-        print "hand detected " + str(i)
-        i += 1
-#     PYGAME_WINDOW.prepare(window)
-#     window.draw_black_circle(x, y)
-#     perturb_circle_position()
-#     PYGAME_WINDOW.reveal()
+        handle_frame(frame)
+    window.draw_black_circle(x, y)
+    perturb_circle_position()
+    PYGAME_WINDOW.reveal()
 
