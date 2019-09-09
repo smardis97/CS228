@@ -22,24 +22,40 @@ def perturb_circle_position():
 
 
 def handle_frame(frame):
-    global x, y, xMin, xMax, yMin, yMax
     hand = frame.hands[0]
-    indexFinger = hand.fingers.finger_type(Leap.Finger.TYPE_INDEX)[0]
-    distalPhalanx = indexFinger.bone(3)
-    tip = distalPhalanx.next_joint
-    x = int(tip[0])
-    y = int(tip[1])
-    if (x < xMin):
-        xMin = x
-    if (x > xMax):
-        xMax = x
-    if (y < yMin):
-        yMin = y
-    if (y > yMax):
-        yMax = y
-    print '(x, y): (' + str(x) + ', ' + str(y) + ')'
-    print 'X limits: (' + str(xMin) + ', ' + str(xMax) + ')'
-    print 'Y limits: (' + str(yMin) + ', ' + str(yMax) + ')'
+    fingers = hand.fingers
+    for finger in fingers:
+        handle_finger(finger)
+    # global x, y, xMin, xMax, yMin, yMax
+    # hand = frame.hands[0]
+    # indexFinger = hand.fingers.finger_type(Leap.Finger.TYPE_INDEX)[0]
+    # distalPhalanx = indexFinger.bone(3)
+    # tip = distalPhalanx.next_joint
+    # x = int(tip[0])
+    # y = int(tip[1])
+    # if (x < xMin):
+    #     xMin = x
+    # if (x > xMax):
+    #     xMax = x
+    # if (y < yMin):
+    #     yMin = y
+    # if (y > yMax):
+    #     yMax = y
+    # print '(x, y): (' + str(x) + ', ' + str(y) + ')'
+    # print 'X limits: (' + str(xMin) + ', ' + str(xMax) + ')'
+    # print 'Y limits: (' + str(yMin) + ', ' + str(yMax) + ')'
+
+
+def handle_finger(finger):
+    for b in range(4):
+        handle_bone(finger.bone(b))
+
+
+def handle_bone(bone):
+    base = bone.prev_joint
+    tip = bone.next_joint
+    print base
+    print tip
 
 
 def scale_to_range(val, init_min, init_max, final_min, final_max):
@@ -70,11 +86,11 @@ i = 0
 while True:
     PYGAME_WINDOW.prepare(window)
     frame = controller.frame()
-    if (len(frame.hands) > 0):
+    if len(frame.hands) > 0:
         handle_frame(frame)
-        pygameX = scale_to_range(x, xMin, xMax, 0, constants.pygameWindowWidth)
-        pygameY = constants.pygameWindowHeight - scale_to_range(y, yMin, yMax, 0, constants.pygameWindowHeight)
-        print 'Coords: (' + str(pygameX) + ', ' + str(pygameY) + ')'
-    window.draw_black_circle(pygameX, pygameY)
+        # pygameX = scale_to_range(x, xMin, xMax, 0, constants.pygameWindowWidth)
+        # pygameY = constants.pygameWindowHeight - scale_to_range(y, yMin, yMax, 0, constants.pygameWindowHeight)
+    #     print 'Coords: (' + str(pygameX) + ', ' + str(pygameY) + ')'
+    # window.draw_black_circle(pygameX, pygameY)
     PYGAME_WINDOW.reveal()
 
