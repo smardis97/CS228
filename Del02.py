@@ -8,17 +8,9 @@ import random
 import constants
 
 
-def perturb_circle_position():
-    global x, y
-    die_roll = random.randint(1, 4)
-    if die_roll == 1:
-        x += 1
-    elif die_roll == 2:
-        x -= 1
-    elif die_roll == 3:
-        y += 1
-    else:
-        y -= 1
+def handle_vector(v):
+    tup = (v[0], v[1])
+    return tup
 
 
 def handle_frame(frame):
@@ -26,24 +18,6 @@ def handle_frame(frame):
     fingers = hand.fingers
     for finger in fingers:
         handle_finger(finger)
-    # global x, y, xMin, xMax, yMin, yMax
-    # hand = frame.hands[0]
-    # indexFinger = hand.fingers.finger_type(Leap.Finger.TYPE_INDEX)[0]
-    # distalPhalanx = indexFinger.bone(3)
-    # tip = distalPhalanx.next_joint
-    # x = int(tip[0])
-    # y = int(tip[1])
-    # if (x < xMin):
-    #     xMin = x
-    # if (x > xMax):
-    #     xMax = x
-    # if (y < yMin):
-    #     yMin = y
-    # if (y > yMax):
-    #     yMax = y
-    # print '(x, y): (' + str(x) + ', ' + str(y) + ')'
-    # print 'X limits: (' + str(xMin) + ', ' + str(xMax) + ')'
-    # print 'Y limits: (' + str(yMin) + ', ' + str(yMax) + ')'
 
 
 def handle_finger(finger):
@@ -52,10 +26,34 @@ def handle_finger(finger):
 
 
 def handle_bone(bone):
-    base = bone.prev_joint
-    tip = bone.next_joint
-    print base
-    print tip
+    global window
+    base = handle_vector(bone.prev_joint)
+    adjust_scale(base)
+    base = scale_point_to_range(base)
+    tip = handle_vector(bone.next_joint)
+    adjust_scale(tip)
+    tip = scale_point_to_range(tip)
+    window.draw_bone(base, tip)
+
+
+def adjust_scale(point):
+    global xMin, xMax, yMin, yMax
+    if point[0] < xMin:
+        xMin = point[0]
+    if point[0] > xMax:
+        xMax = point[0]
+    if point[1] < yMin:
+        yMin = point[1]
+    if point[1] > yMax:
+        yMax = point[1]
+        
+
+def scale_point_to_range(point):
+    new_point = (
+        scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth),
+        scale_to_range(point[1], yMin, yMax, 0, constants.pygameWindowHeight)
+    )
+    return new_point
 
 
 def scale_to_range(val, init_min, init_max, final_min, final_max):
@@ -68,8 +66,6 @@ def scale_to_range(val, init_min, init_max, final_min, final_max):
     return int(new_val)
 
 window = PYGAME_WINDOW()
-
-print(window)
 
 xMin = 1000
 xMax = -1000
