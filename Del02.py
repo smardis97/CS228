@@ -22,18 +22,18 @@ def handle_frame(frame):
 
 def handle_finger(finger):
     for b in range(4):
-        handle_bone(finger.bone(b))
+        handle_bone(finger.bone(b), b)
 
 
-def handle_bone(bone):
+def handle_bone(bone, bone_type):
     global window
     base = handle_vector(bone.prev_joint)
     adjust_scale(base)
-    base = scale_point_to_range(base)
+    base = invert_y(scale_point_to_range(base))
     tip = handle_vector(bone.next_joint)
     adjust_scale(tip)
-    tip = scale_point_to_range(tip)
-    window.draw_bone(base, tip)
+    tip = invert_y(scale_point_to_range(tip))
+    window.draw_bone(base, tip, bone_type)
 
 
 def adjust_scale(point):
@@ -46,7 +46,12 @@ def adjust_scale(point):
         yMin = point[1]
     if point[1] > yMax:
         yMax = point[1]
-        
+
+
+def invert_y(point):
+    new_point = (point[0], constants.pygameWindowHeight - point[1])
+    return new_point
+
 
 def scale_point_to_range(point):
     new_point = (

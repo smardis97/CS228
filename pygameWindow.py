@@ -11,8 +11,8 @@ class PYGAME_WINDOW:
     def draw_black_circle(self, x, y):
         pygame.draw.circle(self.screen, (0, 0, 0), (x, y), 15)
 
-    def draw_bone(self, base, tip):
-        pygame.draw.line(self.screen, (0, 0, 0), base, tip, 5)
+    def draw_bone(self, base, tip, bone_type):
+        pygame.draw.line(self.screen, (0, 0, 0), base, tip, 2 * (3 - bone_type) + 1)
 
     @classmethod
     def prepare(cls, self):
