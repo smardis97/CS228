@@ -33,7 +33,7 @@ def handle_bone(bone, bone_type):
     tip = handle_vector(bone.next_joint)
     adjust_scale(tip)
     tip = invert_y(scale_point_to_range(tip))
-    window.draw_bone(base, tip, bone_type)
+    window.draw_black_line(base, tip, bone_type)
 
 
 def adjust_scale(point):
