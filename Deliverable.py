@@ -7,6 +7,7 @@ from pygameWindow import PYGAME_WINDOW
 import constants
 import numpy as np
 import pickle
+import os
 
 
 class DELIVERABLE:
@@ -23,6 +24,11 @@ class DELIVERABLE:
         self.yMax = -1000
         self.gestureData = np.zeros((5, 4, 6), dtype='f')
         self.count = 0
+        to_delete = os.listdir("userData")
+        for file in to_delete:
+            os.remove("userData/" + file)
+        os.rmdir("userData")
+        os.mkdir("userData")
 
     def handle_frame(self, frame):
         hand = frame.hands[0]
