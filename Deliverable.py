@@ -6,6 +6,7 @@ import Leap
 from pygameWindow import PYGAME_WINDOW
 import constants
 import numpy as np
+import pickle
 
 
 class DELIVERABLE:
@@ -29,6 +30,7 @@ class DELIVERABLE:
             self.handle_finger(fingers[f], f)
         if self.recording_is_ending():
             print self.gestureData
+            self.save_gesture()
 
     def handle_finger(self, finger, f):
         for b in range(4):
@@ -59,6 +61,11 @@ class DELIVERABLE:
             self.yMin = point[1]
         if point[1] > self.yMax:
             self.yMax = point[1]
+
+    def save_gesture(self):
+        pickle_out = open("userData/gesture.p", "wb")
+        pickle.dump(self.gestureData, pickle_out)
+        pickle_out.close()
 
     def scale_point_to_range(self, point):
         new_point = (
