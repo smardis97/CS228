@@ -22,6 +22,7 @@ class DELIVERABLE:
         self.yMin = 1000
         self.yMax = -1000
         self.gestureData = np.zeros((5, 4, 6), dtype='f')
+        self.count = 0
 
     def handle_frame(self, frame):
         hand = frame.hands[0]
@@ -31,6 +32,7 @@ class DELIVERABLE:
         if self.recording_is_ending():
             print self.gestureData
             self.save_gesture()
+            self.count += 1
 
     def handle_finger(self, finger, f):
         for b in range(4):
@@ -63,7 +65,7 @@ class DELIVERABLE:
             self.yMax = point[1]
 
     def save_gesture(self):
-        pickle_out = open("userData/gesture.p", "wb")
+        pickle_out = open("userData/gesture" + str(self.count) + ".p", "wb")
         pickle.dump(self.gestureData, pickle_out)
         pickle_out.close()
 
