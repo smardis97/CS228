@@ -10,7 +10,7 @@ import pickle
 import os
 
 
-class DELIVERABLE:
+class RECORDER:
     def __init__(self):
         self.controller = Leap.Controller()
         self.pygameWindow = PYGAME_WINDOW()
@@ -47,10 +47,10 @@ class DELIVERABLE:
     def handle_bone(self, bone, bone_type, finger_type):
         base = self.handle_vector(bone.prev_joint)
         self.adjust_scale(base)
-        base = DELIVERABLE.invert_y(self.scale_point_to_range(base))
+        base = RECORDER.invert_y(self.scale_point_to_range(base))
         tip = self.handle_vector(bone.next_joint)
         self.adjust_scale(tip)
-        tip = DELIVERABLE.invert_y(self.scale_point_to_range(tip))
+        tip = RECORDER.invert_y(self.scale_point_to_range(tip))
         self.pygameWindow.draw_line(base, tip, bone_type, self.currentNumberOfHands)
         if self.recording_is_ending():
             self.gestureData[finger_type, bone_type, 0] = bone.prev_joint[0]
@@ -77,8 +77,8 @@ class DELIVERABLE:
 
     def scale_point_to_range(self, point):
         new_point = (
-            DELIVERABLE.scale_to_range(point[0], self.xMin, self.xMax, 0, constants.pygameWindowWidth),
-            DELIVERABLE.scale_to_range(point[1], self.yMin, self.yMax, 0, constants.pygameWindowHeight)
+            RECORDER.scale_to_range(point[0], self.xMin, self.xMax, 0, constants.pygameWindowWidth),
+            RECORDER.scale_to_range(point[1], self.yMin, self.yMax, 0, constants.pygameWindowHeight)
         )
         return new_point
 

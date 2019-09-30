@@ -1,7 +1,7 @@
-from Deliverable import *
+from Recorder import *
 import random
 import constants
 
 
-deliver = DELIVERABLE()
+deliver = RECORDER()
 deliver.run_forever()
