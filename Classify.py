@@ -11,8 +11,8 @@ def reshape_data(set1, set2):
         y[row+1000] = 8
         col = 0
         for finger in range(0, 5):
-            for bone in range(0, 4):
-                for point in range(0, 6):
+            for bone in range(0, 2):
+                for point in range(0, 3):
                     X[row, col] = set1[finger, bone, point, row]
                     X[row+1000, col] = set2[finger, bone, point, row]
                     col += 1
@@ -20,14 +20,32 @@ def reshape_data(set1, set2):
 
 
 def reduce_data(X):
+    X = np.delete(X, 1, 1)
+    X = np.delete(X, 1, 1)
+    X = np.delete(X, 0, 2)
+    X = np.delete(X, 0, 2)
+    X = np.delete(X, 0, 2)
+    return X
+
+
+def center_data(X):
+    allXCoordinates = X[:, :, 0, :]
+    meanValue = allXCoordinates.mean()
+    X[:, :, 0, :] = allXCoordinates - meanValue
+    allYCoordinates = X[:, 0, :, :]
+    meanValue = allYCoordinates.mean()
+    X[:, 0, :, :] = allYCoordinates - meanValue
+    allZCoordinates = X[0, :, :, :]
+    meanValue = allZCoordinates.mean()
+    X[0, :, :, :] = allZCoordinates - meanValue
     return X
 
 knn = KNN()
 knn.Use_K_Of(15)
-train7 = reduce_data(pickle.load(open('userData/train7.dat')))
-train8 = reduce_data(pickle.load(open('userData/train8.dat')))
-test7 = reduce_data(pickle.load(open('userData/test7.dat')))
-test8 = reduce_data(pickle.load(open('userData/test8.dat')))
+train7 = center_data(reduce_data(pickle.load(open('userData/train7.dat'))))
+train8 = center_data(reduce_data(pickle.load(open('userData/train8.dat'))))
+test7 = center_data(reduce_data(pickle.load(open('userData/test7.dat'))))
+test8 = center_data(reduce_data(pickle.load(open('userData/test8.dat'))))
 
 trainX, trainy = reshape_data(train7, train8)
 testX, testy = reshape_data(test7, test8)
