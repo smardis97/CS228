@@ -22,8 +22,9 @@ class RECORDER:
         self.xMax = -1000
         self.yMin = 1000
         self.yMax = -1000
-        self.gestureData = np.zeros((5, 4, 6), dtype='f')
-        self.count = 0
+        self.numberOfGestures = 1000
+        self.gestureData = np.zeros((5, 4, 6, self.numberOfGestures), dtype='f')
+        self.gestureIndex = 0
         to_delete = os.listdir("userData")
         for file in to_delete:
             os.remove("userData/" + file)
@@ -35,10 +36,12 @@ class RECORDER:
         fingers = hand.fingers
         for f in range(5):
             self.handle_finger(fingers[f], f)
-        if self.recording_is_ending():
-            print self.gestureData
-            self.save_gesture()
-            self.count += 1
+        if self.recording():
+            print 'gesture ' + str(self.gestureIndex) + ' stored.'
+            self.gestureIndex += 1
+            if self.gestureIndex == self.numberOfGestures:
+                self.save_gesture()
+                exit(0)
 
     def handle_finger(self, finger, f):
         for b in range(4):
@@ -52,13 +55,13 @@ class RECORDER:
         self.adjust_scale(tip)
         tip = RECORDER.invert_y(self.scale_point_to_range(tip))
         self.pygameWindow.draw_line(base, tip, bone_type, self.currentNumberOfHands)
-        if self.recording_is_ending():
-            self.gestureData[finger_type, bone_type, 0] = bone.prev_joint[0]
-            self.gestureData[finger_type, bone_type, 1] = bone.prev_joint[1]
-            self.gestureData[finger_type, bone_type, 2] = bone.prev_joint[2]
-            self.gestureData[finger_type, bone_type, 3] = bone.next_joint[0]
-            self.gestureData[finger_type, bone_type, 4] = bone.next_joint[1]
-            self.gestureData[finger_type, bone_type, 5] = bone.next_joint[2]
+        if self.recording():
+            self.gestureData[finger_type, bone_type, 0, self.gestureIndex] = bone.prev_joint[0]
+            self.gestureData[finger_type, bone_type, 1, self.gestureIndex] = bone.prev_joint[1]
+            self.gestureData[finger_type, bone_type, 2, self.gestureIndex] = bone.prev_joint[2]
+            self.gestureData[finger_type, bone_type, 3, self.gestureIndex] = bone.next_joint[0]
+            self.gestureData[finger_type, bone_type, 4, self.gestureIndex] = bone.next_joint[1]
+            self.gestureData[finger_type, bone_type, 5, self.gestureIndex] = bone.next_joint[2]
 
     def adjust_scale(self, point):
         if point[0] < self.xMin:
@@ -71,7 +74,7 @@ class RECORDER:
             self.yMax = point[1]
 
     def save_gesture(self):
-        pickle_out = open("userData/gesture" + str(self.count) + ".p", "wb")
+        pickle_out = open("userData/gesture.p", "wb")
         pickle.dump(self.gestureData, pickle_out)
         pickle_out.close()
 
@@ -82,8 +85,8 @@ class RECORDER:
         )
         return new_point
 
-    def recording_is_ending(self):
-        if self.currentNumberOfHands == 1 and self.previousNumberOfHands == 2:
+    def recording(self):
+        if self.currentNumberOfHands == 2:
             return True
         return False
 
