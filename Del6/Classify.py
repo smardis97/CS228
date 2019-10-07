@@ -61,6 +61,4 @@ for row in range(2000):
 
 print float(predict_count) / 2000.
 
-
-
-
+pickle.dump(knn, open('userData/classifier.p', 'wb'))
