@@ -4,7 +4,7 @@ from knn import KNN
 
 
 def reshape_data(set1, set2):
-    X = np.zeros((2000, 5*4*6), dtype='f')
+    X = np.zeros((2000, 5*2*3), dtype='f')
     y = np.zeros(2000, dtype='f')
     for row in range(1000):
         y[row] = 7
@@ -42,10 +42,12 @@ def center_data(X):
 
 knn = KNN()
 knn.Use_K_Of(15)
-train7 = center_data(reduce_data(pickle.load(open('userData/train7.dat'))))
-train8 = center_data(reduce_data(pickle.load(open('userData/train8.dat'))))
-test7 = center_data(reduce_data(pickle.load(open('userData/test7.dat'))))
-test8 = center_data(reduce_data(pickle.load(open('userData/test8.dat'))))
+train7 = center_data(reduce_data(pickle.load(open('Del6/userData/train7.dat', 'rb'))))
+train8 = center_data(reduce_data(pickle.load(open('Del6/userData/train8.dat', 'rb'))))
+test7 = center_data(reduce_data(pickle.load(open('Del6/userData/test7.dat', 'rb'))))
+test8 = center_data(reduce_data(pickle.load(open('Del6/userData/test8.dat', 'rb'))))
+train6 = pickle.load(open('Del6/userData/Clark_train6.p', 'rb'))
+test6 = pickle.load(open('Del6/userData/Clark_test6.p', 'rb'))
 
 trainX, trainy = reshape_data(train7, train8)
 testX, testy = reshape_data(test7, test8)
@@ -61,4 +63,4 @@ for row in range(2000):
 
 print float(predict_count) / 2000.
 
-pickle.dump(knn, open('userData/classifier.p', 'wb'))
+pickle.dump(knn, open('Del6/userData/classifier.p', 'wb'))

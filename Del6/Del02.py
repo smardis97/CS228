@@ -10,6 +10,19 @@ import pickle
 import numpy as np
 
 
+def center_data(l):
+    x_coords = l[0, ::3]
+    y_coords = l[0, 1::3]
+    z_coords = l[0, 2::3]
+    x_mean = x_coords.mean()
+    y_mean = y_coords.mean()
+    z_mean = z_coords.mean()
+    l[0, ::3] = x_coords - x_mean
+    l[0, 1::3] = y_coords - y_mean
+    l[0, 2::3] = z_coords - z_mean
+    return l
+
+
 def handle_vector(v):
     tup = (v[0], v[1])
     return tup
@@ -99,6 +112,8 @@ while True:
     if len(frame.hands) > 0:
         k = 0
         handle_frame(frame)
-        print(testData)
+        testData = center_data(testData)
+        predicted_class = clf.Predict(testData)
+        print predicted_class
     PYGAME_WINDOW.reveal()
 
