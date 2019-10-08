@@ -6,6 +6,8 @@ import Leap
 from pygameWindow import PYGAME_WINDOW
 import random
 import constants
+import pickle
+import numpy as np
 
 
 def handle_vector(v):
@@ -26,11 +28,16 @@ def handle_finger(finger):
 
 
 def handle_bone(bone, bone_type):
-    global window
+    global window, k, testData
     base = handle_vector(bone.prev_joint)
     adjust_scale(base)
     base = invert_y(scale_point_to_range(base))
     tip = handle_vector(bone.next_joint)
+    if bone_type == 0 or bone_type == 3:
+        testData[0, k] = bone.next_joint[0]
+        testData[0, k+1] = bone.next_joint[1]
+        testData[0, k+2] = bone.next_joint[2]
+        k = k + 3
     adjust_scale(tip)
     tip = invert_y(scale_point_to_range(tip))
     window.draw_black_line(base, tip, bone_type)
@@ -71,6 +78,8 @@ def scale_to_range(val, init_min, init_max, final_min, final_max):
     return int(new_val)
 
 window = PYGAME_WINDOW()
+clf = pickle.load(open('userData/classifier.p', 'rb'))
+testData = np.zeros((1, 30), dtype='f')
 
 xMin = 1000
 xMax = -1000
@@ -83,15 +92,13 @@ pygameX, pygameY = 400, 400
 controller = Leap.Controller()
 
 i = 0
-
+k = 0
 while True:
     PYGAME_WINDOW.prepare(window)
     frame = controller.frame()
     if len(frame.hands) > 0:
+        k = 0
         handle_frame(frame)
-        # pygameX = scale_to_range(x, xMin, xMax, 0, constants.pygameWindowWidth)
-        # pygameY = constants.pygameWindowHeight - scale_to_range(y, yMin, yMax, 0, constants.pygameWindowHeight)
-    #     print 'Coords: (' + str(pygameX) + ', ' + str(pygameY) + ')'
-    # window.draw_black_circle(pygameX, pygameY)
+        print(testData)
     PYGAME_WINDOW.reveal()
 
