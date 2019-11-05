@@ -55,6 +55,16 @@ class PYGAME_WINDOW:
         self.screen.blit(image, (constants.pygameWindowWidth / 2 + 3, -3))
         return False
 
+    def draw_example(self, number):
+        if number > 9 or number < 0:
+            raise IndexError
+        else:
+            file_name = "Del6/images/asl-" + str(number) + ".png"
+            image = pygame.image.load(file_name)
+            self.screen.blit(image,
+                             (constants.pygameWindowWidth * 0.75 - (image.get_width() / 2),
+                              constants.pygameWindowHeight / 2))
+
     @classmethod
     def prepare(cls, self):
         pygame.event.get()

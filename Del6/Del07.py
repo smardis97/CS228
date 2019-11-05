@@ -42,10 +42,10 @@ def handle_finger(finger):
 
 def handle_bone(bone, bone_type):
     global window, k, testData
-    base = handle_vector(bone.prev_joint)
+    base = bone.prev_joint
     adjust_scale(base)
     base = scale_to_top_left(base)
-    tip = handle_vector(bone.next_joint)
+    tip = bone.next_joint
     if bone_type == 0 or bone_type == 3:
         testData[0, k] = bone.next_joint[0]
         testData[0, k+1] = bone.next_joint[1]
@@ -57,7 +57,7 @@ def handle_bone(bone, bone_type):
 
 
 def adjust_scale(point):
-    global xMin, xMax, yMin, yMax
+    global xMin, xMax, yMin, yMax, zMin, zMax
     if point[0] < xMin:
         xMin = point[0]
     if point[0] > xMax:
@@ -66,6 +66,10 @@ def adjust_scale(point):
         yMin = point[1]
     if point[1] > yMax:
         yMax = point[1]
+    if point[2] < zMin:
+        zMin = point[2]
+    if point[2] > zMax:
+        zMax = point[2]
 
 
 def invert_y(point):
@@ -73,26 +77,10 @@ def invert_y(point):
     return new_point
 
 
-def scale_to_bottom_left(point):
-    new_point = (
-        scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth / 2),
-        scale_to_range(point[1], yMin, yMax, 0, constants.pygameWindowHeight / 2)
-    )
-    return new_point
-
-
-def scale_to_bottom_right(point):
-    new_point = (
-        scale_to_range(point[0], xMin, xMax, constants.pygameWindowWidth / 2, constants.pygameWindowWidth),
-        scale_to_range(point[1], yMin, yMax, 0, constants.pygameWindowHeight / 2)
-    )
-    return new_point
-
-
 def scale_to_top_left(point):
     new_point = (
         scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth / 2),
-        scale_to_range(point[1], yMin, yMax, constants.pygameWindowHeight / 2, constants.pygameWindowHeight)
+        scale_to_range(point[2], zMin, zMax, 0, constants.pygameWindowHeight / 2)
     )
     return new_point
 
@@ -100,7 +88,23 @@ def scale_to_top_left(point):
 def scale_to_top_right(point):
     new_point = (
         scale_to_range(point[0], xMin, xMax, constants.pygameWindowWidth / 2, constants.pygameWindowWidth),
-        scale_to_range(point[1], yMin, yMax, constants.pygameWindowHeight / 2, constants.pygameWindowHeight)
+        scale_to_range(point[2], zMin, zMax, 0, constants.pygameWindowHeight / 2)
+    )
+    return new_point
+
+
+def scale_to_bottom_left(point):
+    new_point = (
+        scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth / 2),
+        scale_to_range(point[2], zMin, zMax, constants.pygameWindowHeight / 2, constants.pygameWindowHeight)
+    )
+    return new_point
+
+
+def scale_to_bottom_right(point):
+    new_point = (
+        scale_to_range(point[0], xMin, xMax, constants.pygameWindowWidth / 2, constants.pygameWindowWidth),
+        scale_to_range(point[2], zMin, zMax, constants.pygameWindowHeight / 2, constants.pygameWindowHeight)
     )
     return new_point
 
@@ -151,11 +155,15 @@ window = PYGAME_WINDOW()
 program_state = 0
 clf = pickle.load(open('Del6/userData/classifier.p', 'rb'))
 testData = np.zeros((1, 30), dtype='f')
+requested_class = None
+correct_count = 0
 
 xMin = 1000
 xMax = -1000
 yMin = 1000
 yMax = -1000
+zMin = 1000
+zMax = -1000
 
 x, y = 400, 400
 pygameX, pygameY = 400, 400
@@ -171,9 +179,6 @@ while True:
         program_state = 1
         k = 0
         handle_frame(frame)
-        testData = center_data(testData)
-        predicted_class = clf.Predict(testData)
-        print predicted_class
     else:
         program_state = 0
     if program_state == 0:
@@ -181,6 +186,20 @@ while True:
     elif program_state == 1:
         if window.draw_help_image(True, determine_centering(frame.hands[0])):
             program_state = 2
+    if program_state == 2:
+        if requested_class is None:
+            requested_class = random.randint(0, 9)
+        if requested_class is not None:
+            window.draw_example(requested_class)
+            testData = center_data(testData)
+            predicted_class = clf.Predict(testData)
+            if predicted_class == requested_class:
+                correct_count += 1
+            if correct_count >= 10:
+                print "Success!"
+                requested_class = None
+                correct_count = 0
+
     window.draw_dividers()
 
     PYGAME_WINDOW.reveal()
