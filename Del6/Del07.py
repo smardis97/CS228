@@ -24,7 +24,7 @@ def center_data(l):
 
 
 def handle_vector(v):
-    tup = (v[0], v[1])
+    tup = (v[0], v[2])
     return tup
 
 
@@ -41,18 +41,18 @@ def handle_finger(finger):
 
 
 def handle_bone(bone, bone_type):
-    global window#, k, testData
+    global window, k, testData
     base = handle_vector(bone.prev_joint)
     adjust_scale(base)
-    base = invert_y(scale_to_top_left(base))
+    base = scale_to_top_left(base)
     tip = handle_vector(bone.next_joint)
-    # if bone_type == 0 or bone_type == 3:
-    #     testData[0, k] = bone.next_joint[0]
-    #     testData[0, k+1] = bone.next_joint[1]
-    #     testData[0, k+2] = bone.next_joint[2]
-    #     k = k + 3
+    if bone_type == 0 or bone_type == 3:
+        testData[0, k] = bone.next_joint[0]
+        testData[0, k+1] = bone.next_joint[1]
+        testData[0, k+2] = bone.next_joint[2]
+        k = k + 3
     adjust_scale(tip)
-    tip = invert_y(scale_to_top_left(tip))
+    tip = scale_to_top_left(tip)
     window.draw_black_line(base, tip, bone_type)
 
 
@@ -149,8 +149,8 @@ def determine_centering(hand):
 
 window = PYGAME_WINDOW()
 program_state = 0
-# clf = pickle.load(open('Del6/userData/classifier.p', 'rb'))
-# testData = np.zeros((1, 30), dtype='f')
+clf = pickle.load(open('Del6/userData/classifier.p', 'rb'))
+testData = np.zeros((1, 30), dtype='f')
 
 xMin = 1000
 xMax = -1000
@@ -171,15 +171,16 @@ while True:
         program_state = 1
         k = 0
         handle_frame(frame)
-        # testData = center_data(testData)
-        # predicted_class = clf.Predict(testData)
-        # print predicted_class
+        testData = center_data(testData)
+        predicted_class = clf.Predict(testData)
+        print predicted_class
     else:
         program_state = 0
     if program_state == 0:
         window.draw_help_image()
     elif program_state == 1:
-        window.draw_help_image(True, determine_centering(frame.hands[0]))
+        if window.draw_help_image(True, determine_centering(frame.hands[0])):
+            program_state = 2
     window.draw_dividers()
 
     PYGAME_WINDOW.reveal()

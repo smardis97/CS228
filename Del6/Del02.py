@@ -24,7 +24,7 @@ def center_data(l):
 
 
 def handle_vector(v):
-    tup = (v[0], v[1])
+    tup = (v[0], v[2])
     return tup
 
 
@@ -44,7 +44,7 @@ def handle_bone(bone, bone_type):
     global window, k, testData
     base = handle_vector(bone.prev_joint)
     adjust_scale(base)
-    base = invert_y(scale_point_to_range(base))
+    base = scale_point_to_range(base)
     tip = handle_vector(bone.next_joint)
     if bone_type == 0 or bone_type == 3:
         testData[0, k] = bone.next_joint[0]
@@ -52,7 +52,7 @@ def handle_bone(bone, bone_type):
         testData[0, k+2] = bone.next_joint[2]
         k = k + 3
     adjust_scale(tip)
-    tip = invert_y(scale_point_to_range(tip))
+    tip = scale_point_to_range(tip)
     window.draw_black_line(base, tip, bone_type)
 
 

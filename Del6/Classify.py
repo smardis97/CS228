@@ -40,46 +40,46 @@ def center_data(X):
     allXCoordinates = X[:, :, 0, :]
     meanValue = allXCoordinates.mean()
     X[:, :, 0, :] = allXCoordinates - meanValue
-    allYCoordinates = X[:, 0, :, :]
+    allYCoordinates = X[:, :, 1, :]
     meanValue = allYCoordinates.mean()
-    X[:, 0, :, :] = allYCoordinates - meanValue
-    allZCoordinates = X[0, :, :, :]
+    X[:, :, 1, :] = allYCoordinates - meanValue
+    allZCoordinates = X[:, :, 2, :]
     meanValue = allZCoordinates.mean()
-    X[0, :, :, :] = allZCoordinates - meanValue
+    X[:, :, 2, :] = allZCoordinates - meanValue
     return X
 
 knn = KNN()
 knn.Use_K_Of(15)
 
-train0 = center_data(reduce_data(pickle.load(open('Del6/userData/Childs_train0.p', 'rb'))))
-test0 = center_data(reduce_data(pickle.load(open('Del6/userData/Childs_test0.p', 'rb'))))
+train0 = center_data(reduce_data(pickle.load(open('Del6/userData/Clark_train0.p', 'rb'))))
+test0 = center_data(reduce_data(pickle.load(open('Del6/userData/Clark_test0.p', 'rb'))))
 
-train1 = center_data(reduce_data(pickle.load(open('Del6/userData/Clark_train1.p', 'rb'))))
-test1 = center_data(reduce_data(pickle.load(open('Del6/userData/Clark_test1.p', 'rb'))))
+train1 = center_data(reduce_data(pickle.load(open('Del6/userData/Newton_train1.p', 'rb'))))
+test1 = center_data(reduce_data(pickle.load(open('Del6/userData/Newton_test1.p', 'rb'))))
 
-train2 = center_data(reduce_data(pickle.load(open('Del6/userData/Cottrell_train2.p', 'rb'))))
-test2 = center_data(reduce_data(pickle.load(open('Del6/userData/Cottrell_test2.p', 'rb'))))
+train2 = center_data(reduce_data(pickle.load(open('Del6/userData/Apple_train2.p', 'rb'))))
+test2 = center_data(reduce_data(pickle.load(open('Del6/userData/Apple_test2.p', 'rb'))))
 
-train3 = center_data(reduce_data(pickle.load(open('Del6/userData/Gordon_train3.p', 'rb'))))
-test3 = center_data(reduce_data(pickle.load(open('Del6/userData/Gordon_test3.p', 'rb'))))
+train3 = center_data(reduce_data(pickle.load(open('Del6/userData/Apple_train3.p', 'rb'))))
+test3 = center_data(reduce_data(pickle.load(open('Del6/userData/Apple_test3.p', 'rb'))))
 
 train4 = center_data(reduce_data(pickle.load(open('Del6/userData/Deluca_train4.p', 'rb'))))
 test4 = center_data(reduce_data(pickle.load(open('Del6/userData/Deluca_test4.p', 'rb'))))
 
-train5 = center_data(reduce_data(pickle.load(open('Del6/userData/Deso_train5.p', 'rb'))))
-test5 = center_data(reduce_data(pickle.load(open('Del6/userData/Deso_test5.p', 'rb'))))
+train5 = center_data(reduce_data(pickle.load(open('Del6/userData/Deluca_train5.p', 'rb'))))
+test5 = center_data(reduce_data(pickle.load(open('Del6/userData/Deluca_test5.p', 'rb'))))
 
-train6 = center_data(reduce_data(pickle.load(open('Del6/userData/Enzmann_train6.p', 'rb'))))
-test6 = center_data(reduce_data(pickle.load(open('Del6/userData/Enzmann_test6.p', 'rb'))))
+train6 = center_data(reduce_data(pickle.load(open('Del6/userData/Boland_train6.p', 'rb'))))
+test6 = center_data(reduce_data(pickle.load(open('Del6/userData/Boland_test6.p', 'rb'))))
 
-train7 = center_data(reduce_data(pickle.load(open('Del6/userData/Yeung_train7.p', 'rb'))))
-test7 = center_data(reduce_data(pickle.load(open('Del6/userData/Yeung_test7.p', 'rb'))))
+train7 = center_data(reduce_data(pickle.load(open('Del6/userData/Burleson_train7.p', 'rb'))))
+test7 = center_data(reduce_data(pickle.load(open('Del6/userData/Burleson_test7.p', 'rb'))))
 
-train8 = center_data(reduce_data(pickle.load(open('Del6/userData/Zhang_train8.p', 'rb'))))
-test8 = center_data(reduce_data(pickle.load(open('Del6/userData/Zhang_test8.p', 'rb'))))
+train8 = center_data(reduce_data(pickle.load(open('Del6/userData/Burleson_train8.p', 'rb'))))
+test8 = center_data(reduce_data(pickle.load(open('Del6/userData/Burleson_test8.p', 'rb'))))
 
-train9 = center_data(reduce_data(pickle.load(open('Del6/userData/Castrejon_Sanchez_train9.dat.p', 'rb'))))
-test9 = center_data(reduce_data(pickle.load(open('Del6/userData/Castrejon_Sanchez_test9.dat.p', 'rb'))))
+train9 = center_data(reduce_data(pickle.load(open('Del6/userData/Lee_train9.p', 'rb'))))
+test9 = center_data(reduce_data(pickle.load(open('Del6/userData/Lee_test9.p', 'rb'))))
 
 num_symbols = 10
 
