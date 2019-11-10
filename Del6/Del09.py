@@ -154,6 +154,18 @@ def determine_centering(hand):
     return lr_centering, ud_centering
 
 
+def level_up():
+    global user
+    if Dict.database[user]["level"] < 20:
+        Dict.database[user]["level"] += 1
+    set_round_length()
+
+
+def set_round_length():
+    global round_length, user
+    round_length = 40 if Dict.database[user]["level"] <= 15 else 40 - 5 * (Dict.database[user]["level"] - 15)
+
+
 window = PYGAME_WINDOW()
 user = Dict.start_up()
 Dict.check_user(user)
@@ -161,9 +173,12 @@ program_state = 0
 clf = pickle.load(open('Del6/userData/classifier.p', 'rb'))
 testData = np.zeros((1, 30), dtype='f')
 requested_class = None
+previous_class = -1
 correct_count = 0
-start_time = -1
-end_time = -1
+start_time = time.time()
+end_time = time.time()
+round_length = 40
+set_round_length()
 
 xMin = 1000
 xMax = -1000
@@ -186,17 +201,17 @@ while True:
             exit(0)
     PYGAME_WINDOW.prepare(window)
     frame = controller.frame()
-    window.draw_attempts((
-        Dict.database[user]["attempts0"],
-        Dict.database[user]["attempts1"],
-        Dict.database[user]["attempts2"],
-        Dict.database[user]["attempts3"],
-        Dict.database[user]["attempts4"],
-        Dict.database[user]["attempts5"],
-        Dict.database[user]["attempts6"],
-        Dict.database[user]["attempts7"],
-        Dict.database[user]["attempts8"],
-        Dict.database[user]["attempts9"]
+    window.draw_successes((
+        Dict.database[user]["successes0"],
+        Dict.database[user]["successes1"],
+        Dict.database[user]["successes2"],
+        Dict.database[user]["successes3"],
+        Dict.database[user]["successes4"],
+        Dict.database[user]["successes5"],
+        Dict.database[user]["successes6"],
+        Dict.database[user]["successes7"],
+        Dict.database[user]["successes8"],
+        Dict.database[user]["successes9"]
     ))
     if len(frame.hands) > 0:
         program_state = 1
@@ -210,31 +225,72 @@ while True:
         if window.draw_help_image(True, determine_centering(frame.hands[0])):
             program_state = 2
     if program_state == 2:
-        if requested_class is None:
-            requested_class = random.randint(0, 9)
-            if "attempts" + str(requested_class) not in Dict.database[user]:
-                Dict.database[user]["attempts" + str(requested_class)] = 1
-            else:
-                Dict.database[user]["attempts" + str(requested_class)] += 1
-            if "times" + str(requested_class) not in Dict.database[user]:
-                Dict.database[user]["times" + str(requested_class)] = []
+        if time.time() - start_time <= round_length:
+            if requested_class is None:
+                requested_class = previous_class
+                while requested_class == previous_class:
+                    requested_class = random.randint(0, 9) if Dict.database[user]["level"] >= 10 else random.randint(0, Dict.database[user]["level"])
+                if "attempts" + str(requested_class) not in Dict.database[user]:
+                    Dict.database[user]["attempts" + str(requested_class)] = 1
+                else:
+                    Dict.database[user]["attempts" + str(requested_class)] += 1
+                if "times" + str(requested_class) not in Dict.database[user]:
+                    Dict.database[user]["times" + str(requested_class)] = []
+                start_time = time.time()
+            if requested_class is not None:
+                if time.time() - start_time < round_length:
+                    window.draw_example(requested_class)
+                    testData = center_data(testData)
+                    predicted_class = clf.Predict(testData)
+                    if predicted_class == requested_class:
+                        correct_count += 1
+                    else:
+                        correct_count = 0
+                    if correct_count >= 10:
+                        print "Success!"
+                        end_time = time.time()
+                        Dict.database[user]["times" + str(requested_class)].append(end_time - start_time)
+                        Dict.database[user]["successes" + str(requested_class)] += 1
+                        start_time = time.time()
+                        end_time = time.time()
+                        previous_class = requested_class
+                        requested_class = None
+                        correct_count = 0
+                        moving_on = True
+                        if Dict.database[user]["level"] < 5:
+                            for i in range(Dict.database[user]["level"] + 1):
+                                if Dict.database[user]["successes" + str(i)] < 5:
+                                    moving_on = False
+                                    break
+                        elif Dict.database[user]["level"] < 10:
+                            for i in range(Dict.database[user]["level"] + 1):
+                                if Dict.database[user]["successes" + str(i)] < 10:
+                                    moving_on = False
+                                    break
+                        elif Dict.database[user]["level"] < 15:
+                            for i in range(10):
+                                if Dict.database[user]["successes" + str(i)] < 15:
+                                    moving_on = False
+                                    break
+                        else:
+                            for i in range(10):
+                                if Dict.database[user]["successes" + str(i)] < 15 + 3 * (Dict.database[user]["level"] - 15):
+                                    moving_on = False
+                        if moving_on:
+                            level_up()
+                        Dict.save()
+        else:
+            end_time = time.time()
+            print "start: " + str(start_time)
+            print "end: " + str(end_time)
+            print "difference: " + str(end_time - start_time)
+            print "result: ", end_time - start_time >= round_length
+            print "--------------------------------------"
+            previous_class = requested_class
+            requested_class = None
+            correct_count = 0
             start_time = time.time()
-        if requested_class is not None:
-            window.draw_example(requested_class)
-            testData = center_data(testData)
-            predicted_class = clf.Predict(testData)
-            if predicted_class == requested_class:
-                correct_count += 1
-            if correct_count >= 10:
-                print "Success!"
-                end_time = time.time()
-                Dict.database[user]["times" + str(requested_class)].append(end_time - start_time)
-                Dict.database[user]["success" + str(requested_class)] += 1
-                start_time = -1
-                end_time = -1
-                requested_class = None
-                correct_count = 0
-                Dict.save()
+            end_time = time.time()
 
     window.draw_dividers()
 

@@ -55,15 +55,46 @@ class PYGAME_WINDOW:
         self.screen.blit(image, (constants.pygameWindowWidth / 2 + 3, -3))
         return False
 
-    def draw_example(self, number):
+    def draw_example(self, number, level=0):
+        draw_image = True
         if number > 9 or number < 0:
             raise IndexError
         else:
-            file_name = "Del6/images/asl-" + str(number) + ".png"
-            image = pygame.image.load(file_name)
-            self.screen.blit(image,
-                             (constants.pygameWindowWidth * 0.75 - (image.get_width() / 2),
-                              constants.pygameWindowHeight / 2))
+            if level >= 15:
+                draw_image = False
+            elif level >= 12:
+                if number <= 7:
+                    draw_image = False
+            elif level >= 8:
+                if number <= 4:
+                    draw_image = False
+            elif level >= 5:
+                if number <= 2:
+                    draw_image = False
+            if draw_image:
+                file_name = "Del6/images/asl-" + str(number) + ".png"
+                image = pygame.image.load(file_name)
+                self.screen.blit(image,
+                                 (constants.pygameWindowWidth * 0.75 - (image.get_width() / 2),
+                                  constants.pygameWindowHeight / 2))
+            else:
+                text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 50),
+                                               str(number), True, [0, 0, 0])
+                self.screen.blit(text, (constants.pygameWindowWidth * 0.75, constants.pygameWindowHeight * 0.75))
+
+    def draw_attempts(self, attempts_tenple):
+        for i in range(10):
+            text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 30),
+                                           str(i) + " attempts: " + str(attempts_tenple[i]), True, [0, 0, 0])
+            self.screen.blit(text, (7, 5 + (constants.pygameWindowHeight / 2) + 30 * i))
+
+    def draw_successes(self, attempts_tenple):
+        for i in range(10):
+            text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 30),
+                                           str(i) + " successes: " + str(attempts_tenple[i]), True, [0, 0, 0])
+            self.screen.blit(text, (7, 5 + (constants.pygameWindowHeight / 2) + 30 * i))
+
+
 
     @classmethod
     def prepare(cls, self):
