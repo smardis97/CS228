@@ -80,8 +80,8 @@ class RECORDER:
 
     def scale_point_to_range(self, point):
         new_point = (
-            RECORDER.scale_to_range(point[0], self.xMin, self.xMax, 0, constants.pygameWindowWidth),
-            RECORDER.scale_to_range(point[1], self.yMin, self.yMax, 0, constants.pygameWindowHeight)
+            RECORDER.scale_to_range(point[0], self.xMin, self.xMax, 0, constants.PYGAME_WINDOW_WIDTH),
+            RECORDER.scale_to_range(point[1], self.yMin, self.yMax, 0, constants.PYGAME_WINDOW_DEPTH)
         )
         return new_point
 
@@ -117,5 +117,5 @@ class RECORDER:
 
     @staticmethod
     def invert_y(point):
-        new_point = (point[0], constants.pygameWindowHeight - point[1])
+        new_point = (point[0], constants.PYGAME_WINDOW_DEPTH - point[1])
         return new_point

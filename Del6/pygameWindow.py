@@ -7,7 +7,7 @@ import numpy as np
 class PYGAME_WINDOW:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((constants.pygameWindowWidth, constants.pygameWindowHeight))
+        self.screen = pygame.display.set_mode((constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
         self.disp_counter = 10
 
     def draw_black_circle(self, x, y):
@@ -24,19 +24,19 @@ class PYGAME_WINDOW:
 
     def draw_dividers(self):
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (constants.pygameWindowWidth / 2, 0),
-                         (constants.pygameWindowWidth / 2, constants.pygameWindowHeight), 7)
+                         (constants.PYGAME_WINDOW_WIDTH / 2, 0),
+                         (constants.PYGAME_WINDOW_WIDTH / 2, constants.PYGAME_WINDOW_DEPTH), 7)
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (0, constants.pygameWindowHeight / 2),
-                         (constants.pygameWindowWidth, constants.pygameWindowHeight / 2), 7)
+                         (0, constants.PYGAME_WINDOW_DEPTH / 2),
+                         (constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH / 2), 7)
 
     def draw_secondary_dividers(self):
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (3 * constants.pygameWindowWidth / 8, constants.pygameWindowHeight / 2),
-                         (3 * constants.pygameWindowWidth / 8, constants.pygameWindowHeight), 4)
+                         (3 * constants.PYGAME_WINDOW_WIDTH / 8, constants.PYGAME_WINDOW_DEPTH / 2),
+                         (3 * constants.PYGAME_WINDOW_WIDTH / 8, constants.PYGAME_WINDOW_DEPTH), 4)
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (0, 3 * constants.pygameWindowHeight / 4),
-                         (3 * constants.pygameWindowWidth / 8, 3 * constants.pygameWindowHeight / 4), 4)
+                         (0, 3 * constants.PYGAME_WINDOW_DEPTH / 4),
+                         (3 * constants.PYGAME_WINDOW_WIDTH / 8, 3 * constants.PYGAME_WINDOW_DEPTH / 4), 4)
 
     def draw_help_image(self, hand_present=False, (lr, ud)=(None, None)):
         if hand_present:
@@ -62,7 +62,7 @@ class PYGAME_WINDOW:
         else:
             image = pygame.image.load("Del6/images/place-in-view.jpg")
             self.disp_counter = 10
-        self.screen.blit(image, (constants.pygameWindowWidth / 2 + 3, -3))
+        self.screen.blit(image, (constants.PYGAME_WINDOW_WIDTH / 2 + 3, -3))
         return False
 
     def draw_example(self, number, level=0):
@@ -85,24 +85,24 @@ class PYGAME_WINDOW:
                 file_name = "Del6/images/asl-" + str(number) + ".png"
                 image = pygame.image.load(file_name)
                 self.screen.blit(image,
-                                 (constants.pygameWindowWidth * 0.75 - (image.get_width() / 2),
-                                  constants.pygameWindowHeight / 2))
+                                 (constants.PYGAME_WINDOW_WIDTH * 0.75 - (image.get_width() / 2),
+                                  constants.PYGAME_WINDOW_DEPTH / 2))
             else:
                 text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 80),
                                                str(number), True, [0, 0, 0])
-                self.screen.blit(text, (constants.pygameWindowWidth * 0.75, constants.pygameWindowHeight * 0.75))
+                self.screen.blit(text, (constants.PYGAME_WINDOW_WIDTH * 0.75, constants.PYGAME_WINDOW_DEPTH * 0.75))
 
     def draw_attempts(self, attempts_tenple):
         for i in range(10):
             text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 30),
                                            str(i) + " attempts: " + str(attempts_tenple[i]), True, [0, 0, 0])
-            self.screen.blit(text, (7, 5 + (constants.pygameWindowHeight / 2) + 30 * i))
+            self.screen.blit(text, (7, 5 + (constants.PYGAME_WINDOW_DEPTH / 2) + 30 * i))
 
     def draw_successes(self, attempts_tenple):
         for i in range(10):
             text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 30),
                                            str(i) + " successes: " + str(attempts_tenple[i]), True, [0, 0, 0])
-            self.screen.blit(text, (7, 5 + (constants.pygameWindowHeight / 2) + 30 * i))
+            self.screen.blit(text, (7, 5 + (constants.PYGAME_WINDOW_DEPTH / 2) + 30 * i))
 
     def draw_user_visualization(self, user, current_target):
         target_times = self.get_target_times(user, current_target)
@@ -120,44 +120,44 @@ class PYGAME_WINDOW:
 
     def graphable_point(self, value, number, max_val, length):
         x = utility.scale_to_range(number, 0, length,
-                                   utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                                   utility.scale_to_range(90, 0, 100, 0, 3 * constants.pygameWindowWidth / 8)) + 3
+                                   utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                                   utility.scale_to_range(90, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8)) + 3
 
         y = utility.scale_to_range(value, 0, max_val,
-                                   utility.scale_to_range(90, 0, 100, constants.pygameWindowHeight / 2, 3 * constants.pygameWindowHeight / 4),
-                                   utility.scale_to_range(10, 0, 100, constants.pygameWindowHeight / 2, 3 * constants.pygameWindowHeight / 4))
+                                   utility.scale_to_range(90, 0, 100, constants.PYGAME_WINDOW_DEPTH / 2, 3 * constants.PYGAME_WINDOW_DEPTH / 4),
+                                   utility.scale_to_range(10, 0, 100, constants.PYGAME_WINDOW_DEPTH / 2, 3 * constants.PYGAME_WINDOW_DEPTH / 4))
 
         return x, y
 
     def draw_axes(self):
         # Y-axis
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(10, 0, 100, constants.pygameWindowHeight / 2, 3 * constants.pygameWindowHeight / 4)),
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(90, 0, 100, constants.pygameWindowHeight / 2, 3 * constants.pygameWindowHeight / 4)),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(10, 0, 100, constants.PYGAME_WINDOW_DEPTH / 2, 3 * constants.PYGAME_WINDOW_DEPTH / 4)),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(90, 0, 100, constants.PYGAME_WINDOW_DEPTH / 2, 3 * constants.PYGAME_WINDOW_DEPTH / 4)),
                          2)
         # X-axis
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(90, 0, 100, constants.pygameWindowHeight / 2, 3 * constants.pygameWindowHeight / 4)),
-                         (utility.scale_to_range(90, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(90, 0, 100, constants.pygameWindowHeight / 2, 3 * constants.pygameWindowHeight / 4)),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(90, 0, 100, constants.PYGAME_WINDOW_DEPTH / 2, 3 * constants.PYGAME_WINDOW_DEPTH / 4)),
+                         (utility.scale_to_range(90, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(90, 0, 100, constants.PYGAME_WINDOW_DEPTH / 2, 3 * constants.PYGAME_WINDOW_DEPTH / 4)),
                          2)
 
         # Y-axis
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(10, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)),
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)),
                          2)
         # X-axis
         pygame.draw.line(self.screen, (0, 0, 0),
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)),
-                         (utility.scale_to_range(90, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
-                          utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)),
+                         (utility.scale_to_range(90, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                          utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)),
                          2)
 
     def get_target_times(self, user, target):
@@ -178,42 +178,42 @@ class PYGAME_WINDOW:
         others_mean = np.mean(all_other_times)
         user_mean = np.mean(self.get_all_times(users[current_user_name]))
         pygame.draw.line(self.screen, pygame.color.THECOLORS['blue'],
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
                           utility.scale_to_range(1, 0, 4,
-                                                 utility.scale_to_range(10, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight),
-                                                 utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)
+                                                 utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH),
+                                                 utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)
                                                  )
                           ),
 
-                         (utility.scale_to_range(user_mean, 0, 1.5 * max([others_mean, user_mean]), 0 , 3 * constants.pygameWindowWidth / 8),
+                         (utility.scale_to_range(user_mean, 0, 1.5 * max([others_mean, user_mean]), 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
                           utility.scale_to_range(1, 0, 4,
-                                                 utility.scale_to_range(10, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight),
-                                                 utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)
+                                                 utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH),
+                                                 utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)
                                                  )
                           ), 20)
 
         pygame.draw.line(self.screen, pygame.color.THECOLORS['gray'],
-                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.pygameWindowWidth / 8),
+                         (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
                           utility.scale_to_range(3, 0, 4,
-                                                 utility.scale_to_range(10, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight),
-                                                 utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)
+                                                 utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH),
+                                                 utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)
                                                  )
                           ),
 
-                         (utility.scale_to_range(others_mean, 0, 1.5 * max([others_mean, user_mean]), 0, 3 * constants.pygameWindowWidth / 8),
+                         (utility.scale_to_range(others_mean, 0, 1.5 * max([others_mean, user_mean]), 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
                           utility.scale_to_range(3, 0, 4,
-                                                 utility.scale_to_range(10, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight),
-                                                 utility.scale_to_range(90, 0, 100, 3 * constants.pygameWindowHeight / 4, constants.pygameWindowHeight)
+                                                 utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH),
+                                                 utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)
                                                  )
                           ), 20)
 
     def draw_help_visualization(self, warmer):
         if warmer:
             image = pygame.image.load("Del6/images/checkmark.jpg")
-            self.screen.blit(image, (3 * constants.pygameWindowWidth / 8, constants.pygameWindowHeight / 2))
+            self.screen.blit(image, (3 * constants.PYGAME_WINDOW_WIDTH / 8, constants.PYGAME_WINDOW_DEPTH / 2))
         else:
             image = pygame.image.load("Del6/images/x.jpg")
-            self.screen.blit(image, (3 * constants.pygameWindowWidth / 8, 3 * constants.pygameWindowHeight / 4))
+            self.screen.blit(image, (3 * constants.PYGAME_WINDOW_WIDTH / 8, 3 * constants.PYGAME_WINDOW_DEPTH / 4))
 
 
     @classmethod

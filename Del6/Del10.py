@@ -45,7 +45,7 @@ def handle_finger(finger):
 
 
 def handle_bone(bone, bone_type):
-    global window, k, testData
+    global window, k, test_data
     base = bone.prev_joint
     adjust_scale(base)
     base = scale_to_top_left(base)
@@ -61,7 +61,7 @@ def handle_bone(bone, bone_type):
 
 
 def adjust_scale(point):
-    global xMin, xMax, yMin, yMax, zMin, zMax
+    global x_min, x_max, y_min, y_max, z_min, z_max
     if point[0] < xMin:
         xMin = point[0]
     if point[0] > xMax:
@@ -77,44 +77,44 @@ def adjust_scale(point):
 
 
 def invert_y(point):
-    new_point = (point[0], constants.pygameWindowHeight - point[1])
+    new_point = (point[0], constants.PYGAME_WINDOW_DEPTH - point[1])
     return new_point
 
 
 def scale_to_top_left(point):
     new_point = (
-        utility.scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth / 2),
-        utility.scale_to_range(point[2], zMin, zMax, 0, constants.pygameWindowHeight / 2)
+        utility.scale_to_range(point[0], x_min, x_max, 0, constants.PYGAME_WINDOW_WIDTH / 2),
+        utility.scale_to_range(point[2], z_min, z_max, 0, constants.PYGAME_WINDOW_DEPTH / 2)
     )
     return new_point
 
 
 def scale_to_top_right(point):
     new_point = (
-        utility.scale_to_range(point[0], xMin, xMax, constants.pygameWindowWidth / 2, constants.pygameWindowWidth),
-        utility.scale_to_range(point[2], zMin, zMax, 0, constants.pygameWindowHeight / 2)
+        utility.scale_to_range(point[0], x_min, x_max, constants.PYGAME_WINDOW_WIDTH / 2, constants.PYGAME_WINDOW_WIDTH),
+        utility.scale_to_range(point[2], z_min, z_max, 0, constants.PYGAME_WINDOW_DEPTH / 2)
     )
     return new_point
 
 
 def scale_to_bottom_left(point):
     new_point = (
-        utility.scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth / 2),
-        utility.scale_to_range(point[2], zMin, zMax, constants.pygameWindowHeight / 2, constants.pygameWindowHeight)
+        utility.scale_to_range(point[0], x_min, x_max, 0, constants.PYGAME_WINDOW_WIDTH / 2),
+        utility.scale_to_range(point[2], z_min, z_max, constants.PYGAME_WINDOW_DEPTH / 2, constants.PYGAME_WINDOW_DEPTH)
     )
     return new_point
 
 
 def scale_to_bottom_right(point):
     new_point = (
-        utility.scale_to_range(point[0], xMin, xMax, constants.pygameWindowWidth / 2, constants.pygameWindowWidth),
-        utility.scale_to_range(point[2], zMin, zMax, constants.pygameWindowHeight / 2, constants.pygameWindowHeight)
+        utility.scale_to_range(point[0], x_min, x_max, constants.PYGAME_WINDOW_WIDTH / 2, constants.PYGAME_WINDOW_WIDTH),
+        utility.scale_to_range(point[2], z_min, z_max, constants.PYGAME_WINDOW_DEPTH / 2, constants.PYGAME_WINDOW_DEPTH)
     )
     return new_point
 
 
 def determine_centering(hand):
-    global xMin, xMax, yMin, yMax
+    global x_min, x_max, y_min, y_max
     lr_centering = 0
     ud_centering = 0
     x_total = 0
@@ -162,7 +162,7 @@ user = Dict.start_up()
 Dict.check_user(user)
 program_state = 0
 clf = pickle.load(open('Del6/userData/classifier.p', 'rb'))
-testData = np.zeros((1, 30), dtype='f')
+test_data = np.zeros((1, 30), dtype='f')
 requested_class = None
 previous_class = -1
 correct_count = 0
@@ -171,12 +171,12 @@ end_time = time.time()
 round_length = 40
 set_round_length()
 
-xMin = 1000
-xMax = -1000
-yMin = 1000
-yMax = -1000
-zMin = 1000
-zMax = -1000
+x_min = 1000
+x_max = -1000
+y_min = 1000
+y_max = -1000
+z_min = 1000
+z_max = -1000
 
 x, y = 400, 400
 pygameX, pygameY = 400, 400
@@ -220,8 +220,8 @@ while True:
                 window.draw_user_visualization(Dict.database[user], requested_class)
                 if time.time() - start_time < round_length:
                     window.draw_example(requested_class, Dict.database[user]["level"])
-                    testData = center_data(testData)
-                    predicted_class = clf.Predict(testData)
+                    test_data = center_data(test_data)
+                    predicted_class = clf.Predict(test_data)
                     if predicted_class == requested_class:
                         window.draw_help_visualization(True)
                         correct_count += 1

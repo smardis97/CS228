@@ -37,7 +37,7 @@ def handle_bone(bone, bone_type):
 
 
 def adjust_scale(point):
-    global xMin, xMax, yMin, yMax
+    global x_min, x_max, y_min, y_max
     if point[0] < xMin:
         xMin = point[0]
     if point[0] > xMax:
@@ -49,14 +49,14 @@ def adjust_scale(point):
 
 
 def invert_y(point):
-    new_point = (point[0], constants.pygameWindowHeight - point[1])
+    new_point = (point[0], constants.PYGAME_WINDOW_DEPTH - point[1])
     return new_point
 
 
 def scale_point_to_range(point):
     new_point = (
-        scale_to_range(point[0], xMin, xMax, 0, constants.pygameWindowWidth),
-        scale_to_range(point[1], yMin, yMax, 0, constants.pygameWindowHeight)
+        scale_to_range(point[0], x_min, x_max, 0, constants.PYGAME_WINDOW_WIDTH),
+        scale_to_range(point[1], y_min, y_max, 0, constants.PYGAME_WINDOW_DEPTH)
     )
     return new_point
 
@@ -72,10 +72,10 @@ def scale_to_range(val, init_min, init_max, final_min, final_max):
 
 window = PYGAME_WINDOW()
 
-xMin = 1000
-xMax = -1000
-yMin = 1000
-yMax = -1000
+x_min = 1000
+x_max = -1000
+y_min = 1000
+y_max = -1000
 
 x, y = 400, 400
 pygameX, pygameY = 400, 400

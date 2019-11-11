@@ -22,7 +22,7 @@ def perturb_circle_position():
 
 
 def handle_frame(frame):
-    global x, y, xMin, xMax, yMin, yMax
+    global x, y, x_min, x_max, y_min, y_max
     hand = frame.hands[0]
     indexFinger = hand.fingers.finger_type(Leap.Finger.TYPE_INDEX)[0]
     distalPhalanx = indexFinger.bone(3)
@@ -55,10 +55,10 @@ window = PYGAME_WINDOW()
 
 print(window)
 
-xMin = 1000
-xMax = -1000
-yMin = 1000
-yMax = -1000
+x_min = 1000
+x_max = -1000
+y_min = 1000
+y_max = -1000
 
 x, y = 400, 400
 pygameX, pygameY = 400, 400
@@ -72,8 +72,8 @@ while True:
     frame = controller.frame()
     if (len(frame.hands) > 0):
         handle_frame(frame)
-        pygameX = scale_to_range(x, xMin, xMax, 0, constants.pygameWindowWidth)
-        pygameY = constants.pygameWindowHeight - scale_to_range(y, yMin, yMax, 0, constants.pygameWindowHeight)
+        pygameX = scale_to_range(x, x_min, x_max, 0, constants.PYGAME_WINDOW_WIDTH)
+        pygameY = constants.PYGAME_WINDOW_DEPTH - scale_to_range(y, y_min, y_max, 0, constants.PYGAME_WINDOW_DEPTH)
         print 'Coords: (' + str(pygameX) + ', ' + str(pygameY) + ')'
     window.draw_black_circle(pygameX, pygameY)
     PYGAME_WINDOW.reveal()
