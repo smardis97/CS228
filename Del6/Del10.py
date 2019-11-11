@@ -192,18 +192,6 @@ while True:
             exit(0)
     PYGAME_WINDOW.prepare(window)
     frame = controller.frame()
-    # window.draw_successes((
-    #     Dict.database[user]["successes0"],
-    #     Dict.database[user]["successes1"],
-    #     Dict.database[user]["successes2"],
-    #     Dict.database[user]["successes3"],
-    #     Dict.database[user]["successes4"],
-    #     Dict.database[user]["successes5"],
-    #     Dict.database[user]["successes6"],
-    #     Dict.database[user]["successes7"],
-    #     Dict.database[user]["successes8"],
-    #     Dict.database[user]["successes9"]
-    # ))
     if len(frame.hands) > 0:
         program_state = 1
         k = 0
@@ -231,12 +219,14 @@ while True:
             if requested_class is not None:
                 window.draw_user_visualization(Dict.database[user], requested_class)
                 if time.time() - start_time < round_length:
-                    window.draw_example(requested_class)
+                    window.draw_example(requested_class, Dict.database[user]["level"])
                     testData = center_data(testData)
                     predicted_class = clf.Predict(testData)
                     if predicted_class == requested_class:
+                        window.draw_help_visualization(True)
                         correct_count += 1
                     else:
+                        window.draw_help_visualization(False)
                         correct_count = 0
                     if correct_count >= 10:
                         print "Success!"

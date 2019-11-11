@@ -75,8 +75,8 @@ test6 = center_data(reduce_data(pickle.load(open('Del6/userData/Boland_test6.p',
 train7 = center_data(reduce_data(pickle.load(open('Del6/userData/Erickson_train7.p', 'rb'))))
 test7 = center_data(reduce_data(pickle.load(open('Del6/userData/Erickson_test7.p', 'rb'))))
 
-train8 = center_data(reduce_data(pickle.load(open('Del6/userData/Burleson_train8.p', 'rb'))))
-test8 = center_data(reduce_data(pickle.load(open('Del6/userData/Burleson_test8.p', 'rb'))))
+train8 = center_data(reduce_data(pickle.load(open('Del6/userData/Erickson_train8.p', 'rb'))))
+test8 = center_data(reduce_data(pickle.load(open('Del6/userData/Erickson_test8.p', 'rb'))))
 
 train9 = center_data(reduce_data(pickle.load(open('Del6/userData/Lee_train9.p', 'rb'))))
 test9 = center_data(reduce_data(pickle.load(open('Del6/userData/Lee_test9.p', 'rb'))))

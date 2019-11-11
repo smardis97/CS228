@@ -88,7 +88,7 @@ class PYGAME_WINDOW:
                                  (constants.pygameWindowWidth * 0.75 - (image.get_width() / 2),
                                   constants.pygameWindowHeight / 2))
             else:
-                text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 50),
+                text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 80),
                                                str(number), True, [0, 0, 0])
                 self.screen.blit(text, (constants.pygameWindowWidth * 0.75, constants.pygameWindowHeight * 0.75))
 
@@ -207,8 +207,13 @@ class PYGAME_WINDOW:
                                                  )
                           ), 20)
 
-    def draw_help_visualization(self, heat):
-        pass
+    def draw_help_visualization(self, warmer):
+        if warmer:
+            image = pygame.image.load("Del6/images/checkmark.jpg")
+            self.screen.blit(image, (3 * constants.pygameWindowWidth / 8, constants.pygameWindowHeight / 2))
+        else:
+            image = pygame.image.load("Del6/images/x.jpg")
+            self.screen.blit(image, (3 * constants.pygameWindowWidth / 8, 3 * constants.pygameWindowHeight / 4))
 
 
     @classmethod

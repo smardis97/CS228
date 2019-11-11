@@ -239,7 +239,7 @@ while True:
                 start_time = time.time()
             if requested_class is not None:
                 if time.time() - start_time < round_length:
-                    window.draw_example(requested_class)
+                    window.draw_example(requested_class, Dict.database[user]["level"])
                     testData = center_data(testData)
                     predicted_class = clf.Predict(testData)
                     if predicted_class == requested_class:
