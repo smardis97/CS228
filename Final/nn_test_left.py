@@ -91,7 +91,7 @@ def scale_to_range(val, init_min, init_max, final_min, final_max):
     return int(new_val)
 
 window = PYGAME_WINDOW()
-clf = pickle.load(open("{}{}".format(constants.DATA_PATH, constants.NN_CLASSIFIER_FILE), 'rb'))
+clf = pickle.load(open("{}{}".format(constants.DATA_PATH, constants.NN_CLASSIFIER_FILE + "left"), 'rb'))
 test_data = np.zeros((1, 30), dtype='f')
 
 x_min = 1000

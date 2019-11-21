@@ -170,6 +170,7 @@ start_time = time.time()
 end_time = time.time()
 round_length = 40
 set_round_length()
+a, sign, b = None, None, None
 
 x_min = 1000
 x_max = -1000
@@ -206,6 +207,7 @@ while True:
                 requested_class = previous_class
                 while requested_class == previous_class:
                     requested_class = random.randint(0, 9) if dict.database[user]["level"] >= 10 else random.randint(0, dict.database[user]["level"])
+                a, sign, b = utility.randomize_arithmetic(requested_class)
                 if "attempts" + str(requested_class) not in dict.database[user]:
                     dict.database[user]["attempts" + str(requested_class)] = 1
                 else:
@@ -216,7 +218,7 @@ while True:
             if requested_class is not None:
                 window.draw_user_visualization(dict.database[user], requested_class)
                 if time.time() - start_time < round_length:
-                    window.draw_example(requested_class, dict.database[user]["level"])
+                    window.draw_example(requested_class, dict.database[user]["level"], (a, sign, b))
                     test_data = center_data(test_data)
                     predicted_class = clf.Predict(test_data)
                     if predicted_class == requested_class:

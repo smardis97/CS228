@@ -38,15 +38,21 @@ def reduce(X):
 
 
 def center(X):
-    allXCoordinates = X[:, :, 0, :]
-    meanValue = allXCoordinates.mean()
-    X[:, :, 0, :] = allXCoordinates - meanValue
-    allYCoordinates = X[:, :, 1, :]
-    meanValue = allYCoordinates.mean()
-    X[:, :, 1, :] = allYCoordinates - meanValue
-    allZCoordinates = X[:, :, 2, :]
-    meanValue = allZCoordinates.mean()
-    X[:, :, 2, :] = allZCoordinates - meanValue
+    all_x_coordinates = X[:, :, 0, :]
+    mean_value = all_x_coordinates.mean()
+    X[:, :, 0, :] = all_x_coordinates - mean_value
+    all_y_coordinates = X[:, :, 1, :]
+    mean_value = all_y_coordinates.mean()
+    X[:, :, 1, :] = all_y_coordinates - mean_value
+    all_z_coordinates = X[:, :, 2, :]
+    mean_value = all_z_coordinates.mean()
+    X[:, :, 2, :] = all_z_coordinates - mean_value
+    return X
+
+
+def mirror_x(X):
+    all_x_coordinates = X[:, :, 0, :]
+    X[:, :, 0, :] = -1 * all_x_coordinates
     return X
 
 knn = KNN()

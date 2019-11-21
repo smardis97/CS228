@@ -58,14 +58,14 @@ def handle_bone(bone, bone_type):
 
 def adjust_scale(point):
     global x_min, x_max, y_min, y_max
-    if point[0] < xMin:
-        xMin = point[0]
-    if point[0] > xMax:
-        xMax = point[0]
-    if point[1] < yMin:
-        yMin = point[1]
-    if point[1] > yMax:
-        yMax = point[1]
+    if point[0] < x_min:
+        x_min = point[0]
+    if point[0] > x_max:
+        x_max = point[0]
+    if point[1] < y_min:
+        y_min = point[1]
+    if point[1] > y_max:
+        y_max = point[1]
 
 
 def invert_y(point):
@@ -98,9 +98,6 @@ x_min = 1000
 x_max = -1000
 y_min = 1000
 y_max = -1000
-
-x, y = 400, 400
-pygameX, pygameY = 400, 400
 
 controller = Leap.Controller()
 

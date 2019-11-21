@@ -47,9 +47,9 @@ def handle_bone(bone, bone_type):
     base = scale_point_to_range(base)
     tip = handle_vector(bone.next_joint)
     if bone_type == 0 or bone_type == 3:
-        testData[0, k] = bone.next_joint[0]
-        testData[0, k+1] = bone.next_joint[1]
-        testData[0, k+2] = bone.next_joint[2]
+        test_data[0, k] = bone.next_joint[0]
+        test_data[0, k+1] = bone.next_joint[1]
+        test_data[0, k+2] = bone.next_joint[2]
         k = k + 3
     adjust_scale(tip)
     tip = scale_point_to_range(tip)
@@ -58,14 +58,14 @@ def handle_bone(bone, bone_type):
 
 def adjust_scale(point):
     global x_min, x_max, y_min, y_max
-    if point[0] < xMin:
-        xMin = point[0]
-    if point[0] > xMax:
-        xMax = point[0]
-    if point[1] < yMin:
-        yMin = point[1]
-    if point[1] > yMax:
-        yMax = point[1]
+    if point[0] < x_min:
+        x_min = point[0]
+    if point[0] > x_max:
+        x_max = point[0]
+    if point[1] < y_min:
+        y_min = point[1]
+    if point[1] > y_max:
+        y_max = point[1]
 
 
 def invert_y(point):

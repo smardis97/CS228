@@ -2,6 +2,7 @@ import pygame
 import constants
 import utility
 import numpy as np
+import math
 
 
 class PYGAME_WINDOW:
@@ -9,6 +10,7 @@ class PYGAME_WINDOW:
         pygame.init()
         self.screen = pygame.display.set_mode((constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
         self.disp_counter = 10
+
 
     def draw_black_circle(self, x, y):
         pygame.draw.circle(self.screen, (0, 0, 0), (x, y), 15)
@@ -65,12 +67,17 @@ class PYGAME_WINDOW:
         self.screen.blit(image, (constants.PYGAME_WINDOW_WIDTH / 2 + 3, -3))
         return False
 
-    def draw_example(self, number, level=0):
+    def draw_example(self, number, level=0, (a, sign, b)=(None, None, None)):
         draw_image = True
+        draw_equation = False
         if number > 9 or number < 0:
             raise IndexError
         else:
-            if level >= 15:
+            if level == 20:
+                if a is not None and b is not None and sign is not None:
+                    draw_equation = True
+                draw_image = False
+            elif level >= 15:
                 draw_image = False
             elif level >= 12:
                 if number <= 7:
@@ -87,6 +94,10 @@ class PYGAME_WINDOW:
                 self.screen.blit(image,
                                  (constants.PYGAME_WINDOW_WIDTH * 0.75 - (image.get_width() / 2),
                                   constants.PYGAME_WINDOW_DEPTH / 2))
+            elif draw_equation:
+                text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 80),
+                                               str(a) + sign + str(b), True, [0, 0, 0])
+                self.screen.blit(text, (constants.PYGAME_WINDOW_WIDTH * 0.75, constants.PYGAME_WINDOW_DEPTH * 0.75))
             else:
                 text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 80),
                                                str(number), True, [0, 0, 0])
@@ -177,6 +188,8 @@ class PYGAME_WINDOW:
                 all_other_times.extend(self.get_all_times(data))
         others_mean = np.mean(all_other_times)
         user_mean = np.mean(self.get_all_times(users[current_user_name]))
+        if math.isnan(user_mean):
+            user_mean = 0
         pygame.draw.line(self.screen, pygame.color.THECOLORS['blue'],
                          (utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
                           utility.scale_to_range(1, 0, 4,
@@ -185,7 +198,9 @@ class PYGAME_WINDOW:
                                                  )
                           ),
 
-                         (utility.scale_to_range(user_mean, 0, 1.5 * max([others_mean, user_mean]), 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                         (utility.scale_to_range(user_mean, 0, 1.5 * max([others_mean, user_mean]),
+                                                 utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                                                 utility.scale_to_range(90, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8)),
                           utility.scale_to_range(1, 0, 4,
                                                  utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH),
                                                  utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)
@@ -200,7 +215,9 @@ class PYGAME_WINDOW:
                                                  )
                           ),
 
-                         (utility.scale_to_range(others_mean, 0, 1.5 * max([others_mean, user_mean]), 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                         (utility.scale_to_range(others_mean, 0, 1.5 * max([others_mean, user_mean]),
+                                                 utility.scale_to_range(10, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8),
+                                                 utility.scale_to_range(90, 0, 100, 0, 3 * constants.PYGAME_WINDOW_WIDTH / 8)),
                           utility.scale_to_range(3, 0, 4,
                                                  utility.scale_to_range(10, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH),
                                                  utility.scale_to_range(90, 0, 100, 3 * constants.PYGAME_WINDOW_DEPTH / 4, constants.PYGAME_WINDOW_DEPTH)
