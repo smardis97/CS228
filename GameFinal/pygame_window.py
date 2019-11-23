@@ -11,7 +11,6 @@ class PYGAME_WINDOW:
         self.screen = pygame.display.set_mode((constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
         self.disp_counter = 10
 
-
     def draw_black_circle(self, x, y):
         pygame.draw.circle(self.screen, (0, 0, 0), (x, y), 15)
 

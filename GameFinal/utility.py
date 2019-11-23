@@ -1,4 +1,5 @@
 import random
+import math
 
 
 def scale_to_range(val, init_min, init_max, final_min, final_max):
@@ -27,3 +28,23 @@ def randomize_arithmetic(target):
         second_val = first_val - target
 
     return first_val, sign, second_val
+
+
+def get_vector(heading, magnitude):
+    return magnitude * math.cos(math.radians(heading)), magnitude * math.sin(math.radians(heading))
+
+
+def vector_add(v1, v2):
+    return v1[0] + v2[0], v1[1] + v2[1]
+
+
+def get_next(obj, li):
+    return li[(li.index(obj) + 1) % len(li)]
+
+
+def polar_to_cartesian(v):
+    pass
+
+
+def cartesian_to_polar(v):
+    pass

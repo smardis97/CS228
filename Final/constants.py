@@ -2,7 +2,7 @@ PYGAME_WINDOW_WIDTH = 1280
 PYGAME_WINDOW_DEPTH = 768
 
 # File Path Parts
-PARENT_DIR = "GameFinal/"
+PARENT_DIR = "Final/"
 IMAGES_DIR = "images/"
 DATA_DIR = "userData/"
 

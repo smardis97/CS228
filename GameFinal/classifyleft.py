@@ -9,11 +9,19 @@ def reshape(tup_of_sets):
     y = np.zeros(len(tup_of_sets) * 1000, dtype='f')
     for row in range(1000):
         y[row] = 0
-        y[row+1000] = 1
-        y[row+2000] = 2
+        y[row + 1000] = 1
+        y[row + 2000] = 2
+        y[row + 3000] = 3
+        y[row + 4000] = 4
+        y[row + 5000] = 5
+        y[row + 6000] = 6
+        y[row + 7000] = 7
+        # y[row] = 0
+        # y[row+1000] = 1
+        # y[row+2000] = 2
         # y[row+3000] = 3
-        y[row+3000] = 4
-        y[row+4000] = 5
+        # y[row+4000] = 4
+        # y[row+5000] = 5
         # y[row+6000] = 6
         # y[row+7000] = 7
         # y[row+8000] = 8
@@ -50,48 +58,48 @@ def center(X):
     return X
 
 
-def mirror_x(X):
-    all_x_coordinates = X[:, :, 0, :]
-    X[:, :, 0, :] = -1 * all_x_coordinates
-    return X
-
 knn = KNN()
 knn.Use_K_Of(15)
 
-train0 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_0_FILE), 'rb')))))
-test0 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_0_FILE), 'rb')))))
+train0 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_0_FILE_LEFT), 'rb'))))
+test0 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_0_FILE_LEFT), 'rb'))))
 
-train1 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_1_FILE), 'rb')))))
-test1 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_1_FILE), 'rb')))))
+train1 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_1_FILE_LEFT), 'rb'))))
+test1 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_1_FILE_LEFT), 'rb'))))
 
-train2 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_2_LEFT), 'rb')))))
-test2 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_2_LEFT), 'rb')))))
+train2 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_2_FILE_LEFT), 'rb'))))
+test2 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_2_FILE_LEFT), 'rb'))))
 
-# train3 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_3_LEFT), 'rb')))))
-# test3 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_3_LEFT), 'rb')))))
-#
-train4 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_4_FILE), 'rb')))))
-test4 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_4_FILE), 'rb')))))
-#
-train5 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_5_LEFT), 'rb'))))
-test5 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_5_LEFT), 'rb'))))
-#
-# train6 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_6_FILE), 'rb')))))
-# test6 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_6_FILE), 'rb')))))
-#
-# train7 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_7_FILE), 'rb')))))
-# test7 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_7_FILE), 'rb')))))
-#
-# train8 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_8_LEFT), 'rb')))))
-# test8 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_8_LEFT), 'rb')))))
-#
-# train9 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_9_FILE), 'rb')))))
-# test9 = center(reduce(mirror_x(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_9_FILE), 'rb')))))
+train3 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_3_FILE_LEFT), 'rb'))))
+test3 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_3_FILE_LEFT), 'rb'))))
 
-num_symbols = 5
+train4 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_4_FILE_LEFT), 'rb'))))
+test4 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_4_FILE_LEFT), 'rb'))))
 
-trainX, trainy = reshape((train0, train1, train2, train4, train5))#, train6))#, train7))#, train8))#, train9))
-testX, testy = reshape((test0, test1, test2, test4, test5))#, test6))#, test7))#, test8))#, test9))
+train5 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_5_FILE_LEFT), 'rb'))))
+test5 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_5_FILE_LEFT), 'rb'))))
+
+train6 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_6_FILE_LEFT), 'rb'))))
+test6 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_6_FILE_LEFT), 'rb'))))
+
+train7 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_7_FILE_LEFT), 'rb'))))
+test7 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_7_FILE_LEFT), 'rb'))))
+
+train8 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_8_FILE_LEFT), 'rb'))))
+test8 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_8_FILE_LEFT), 'rb'))))
+
+train9 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TRAIN_9_FILE_LEFT), 'rb'))))
+test9 = center(reduce(pickle.load(open("{}{}".format(constants.DATA_PATH, constants.TEST_9_FILE_LEFT), 'rb'))))
+
+num_symbols = 8
+# num_symbols = 10
+
+trainX, trainy = reshape((train0, train1, train2, train3, train4, train5, train6, train7))
+
+testX, testy = reshape((test0, test1, train2, test3, test4, test5, test6, test7))
+
+# trainX, trainy = reshape((train0, train1, train2, train3, train4, train5, train6, train7, train8, train9))
+# testX, testy = reshape((test0, test1, test2, test3, test4, test5, test6, test7, test8, test9))
 
 knn.Fit(trainX, trainy)
 
