@@ -11,11 +11,11 @@ import numpy as np
 import dict
 import pygame
 import utility
+import time
 
 
 def main():
     game_engine = engine.GameEngine()
-    game_engine.spawn_asteroid()
     #
     #
     #  MAIN GAME LOOP
@@ -35,11 +35,8 @@ def main():
         graphics.GraphicsEngine.prepare(game_engine.window)
 
         # main runtime body
-        game_engine.draw_objects()
-        game_engine.move_objects()
-        game_engine.input_update()
+        game_engine.update_game()
 
         graphics.GraphicsEngine.reveal()
-        #exit(0)
 
 main()

@@ -1,5 +1,6 @@
 import random
 import math
+import constants
 
 
 def scale_to_range(val, init_min, init_max, final_min, final_max):
@@ -43,8 +44,13 @@ def get_next(obj, li):
 
 
 def polar_to_cartesian(v):
-    pass
+    angle = v[0] % constants.CIRCLE_DEG
+    x_val = v[1] * math.cos(math.radians(angle))
+    y_val = v[1] * math.sin(math.radians(angle))
+    return x_val, y_val
 
 
 def cartesian_to_polar(v):
-    pass
+    angle = math.degrees(math.atan(v[1]/v[0]))
+    magnitude = math.sqrt(v[0]**2 + v[1]**2)
+    return angle, magnitude

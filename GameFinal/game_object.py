@@ -12,7 +12,7 @@ class GameObject:
 
     def __init__(self, position, max_vel, max_ang_vel, max_radius, color, thickness, collidable=True):
         self.heading = 0
-        self.position = position
+        self.position = [position[0], position[1]]
         self.max_velocity = max_vel
         self.max_angular_velocity = max_ang_vel
         self.velocity = {
@@ -29,7 +29,7 @@ class GameObject:
         self.non_collide = not collidable
 
     def get_velocity(self):
-        return self.velocity
+        return self.velocity["x-component"], self.velocity["y-component"]
 
     def get_angular_velocity(self):
         return self.angular_velocity
@@ -56,10 +56,10 @@ class GameObject:
         self.set_velocity(new_heading, new_magnitude)
 
     def get_point_from_vertex(self, vertex):
-        heading_to_point = (self.heading + vertex[0]) % constants.CIRCLE_DEG
-        x_val = self.position[0] + (vertex[1] * math.cos(math.radians(heading_to_point)))
-        y_val = self.position[1] + (vertex[1] * math.sin(math.radians(heading_to_point)))
-        return x_val, y_val
+        vector = ((self.heading + vertex[0]) % constants.CIRCLE_DEG, vertex[1])
+        vector = utility.polar_to_cartesian(vector)
+        vector = utility.vector_add((self.position[0], self.position[1]), vector)
+        return vector
 
     @abc.abstractmethod
     def update(self, player_vel=None):
@@ -155,5 +155,14 @@ class Bullet(GameObject):
 
 
 class Snow(GameObject):
-    def __init__(self):
-        GameObject.__init__(self)
+    def __init__(self, position):
+        GameObject.__init__(self, position, constants.STAR_MAX_VEL, constants.STAR_MAX_ANG_VEL, settable.STAR_COLOR, 0, False)
+        self.velocity["y-component"] = constants.STAR_VEL
+        self.radius = random.randint(constants.STAR_MIN_RADIUS, constants.STAR_MAX_RADIUS)
+
+    def update(self, player_vel=None):
+        self.position[0] = self.position[0] + self.velocity["x-component"] - player_vel["x-component"]
+        self.position[1] = self.position[1] + self.velocity["y-component"] - player_vel["y-component"]
+
+    def draw_self_to_layer(self, graphic_engine, layer):
+        graphic_engine.add_to_layer(layer, graphics.Circle(self.position, self.radius, self.color))
