@@ -16,9 +16,6 @@ class GameEngine:
         self.player = game_object.Player()
         self.window = graphics.GraphicsEngine()
         self.game_state = constants.GAME_PLAY
-        self.clock_margin = 0.
-        self.last_clock_update = time.time()
-        self.last_snow_update = time.time()
         # self.mouse = {
         #     'button1'
         # }
@@ -55,10 +52,6 @@ class GameEngine:
         }
 
     def update_game(self):
-        if time.time() - self.last_snow_update > constants.STAR_GENERATION_TIME:
-            self.spawn_stars()
-            self.last_snow_update = time.time()
-        self.clock_update()
         self.draw_objects()
         self.move_objects()
         self.input_update()
@@ -97,30 +90,28 @@ class GameEngine:
     def move_objects(self):
         self.player.update()
         for obj in self.game_objects:
-            obj.update(self.player.velocity)
+            obj.update()
         for obj in self.background_objects:
-            obj.update(self.player.velocity)
+            obj.update()
         self.check_collisions()
 
     def spawn_asteroid(self):
-        self.game_objects.append(game_object.Asteroid((0, 0), (0, 0), 3))
+        self.game_objects.append(game_object.Asteroid(GameEngine.asteroid_position(),
+                                                      utility.polar_to_cartesian(GameEngine.random_velocity()),
+                                                      random.randint(- constants.ASTEROID_MAX_ANG_VEL,
+                                                                     constants.ASTEROID_MAX_ANG_VEL)))
 
-    def directional_asteroid_position(self):
-        player_direction = utility.cartesian_to_polar(self.player.get_velocity())[0]
-        point_a = utility.polar_to_cartesian((player_direction - constants.ASTEROID_SPAWN_BREDTH / 2,
-                                              constants.ASTEROID_SPAWN_RANGE))
-        point_b = utility.polar_to_cartesian((player_direction + constants.ASTEROID_SPAWN_BREDTH / 2,
-                                              constants.ASTEROID_SPAWN_RANGE))
-        min_spawn_x = min([point_a[0], point_b[0]])
-        max_spawn_x = max([point_a[0], point_b[0]])
-        min_spawn_y = min([point_a[1], point_b[1]])
-        max_spawn_y = max([point_a[1], point_b[1]])
-        spawn_x = random.randint(min_spawn_x, max_spawn_x)
-        spawn_y = random.randint(min_spawn_y, max_spawn_y)
-        return spawn_x, spawn_y
+    @staticmethod
+    def random_velocity():
+        heading = random.randint(0, 360)
+        magnitude = random.randint(1, constants.ASTEROID_MAX_VEL)
+        return heading, magnitude
 
-    def herd_asteroids(self):
-        pass
+    @staticmethod
+    def asteroid_position():
+        x_pos = random.randint(- constants.ASTEROID_MAX_RADIUS, constants.ASTEROID_MAX_RADIUS)
+        y_pos = random.randint(- constants.ASTEROID_MAX_RADIUS, constants.ASTEROID_MAX_RADIUS)
+        return x_pos, y_pos
 
     def collect_garbage(self):
         pass
@@ -136,22 +127,6 @@ class GameEngine:
             self.player.brake()
 
     def spawn_stars(self):
-        stars_count = constants.STAR_GENERATION_SPAN / constants.STAR_SEPARATION
-        for i in range(stars_count):
-            self.background_objects.append(graphics.Circle(self.star_position(i),
-                                                           random.randint(constants.STAR_MIN_RADIUS,
-                                                                          constants.STAR_MAX_RADIUS)))
-
-    @staticmethod
-    def star_position(i):
-        x_val = - (constants.STAR_GENERATION_SPAN / 2) + (constants.STAR_SEPARATION * i) +\
-                random.randint(- math.floor(constants.STAR_SEPARATION * 0.2), math.ceil(constants.STAR_SEPARATION * 0.2))
-        y_val = constants.STAR_MIN_HEIGHT + random.randint(- constants.STAR_HEIGHT_VARIATION, constants.STAR_HEIGHT_VARIATION)
-
-        return x_val, y_val
-
-    def clock_update(self):
-        last_update = self.last_clock_update
-        self.last_clock_update = time.time()
-        self.clock_margin = (self.last_clock_update - last_update) * 1000
-        print self.clock_margin
+        for i in range(constants.STAR_COUNT):
+            self.background_objects.append(game_object.Snow((random.randint(0, constants.GAME_ARENA_DIMENSIONS[0]),
+                                                             random.randint(0, constants.GAME_ARENA_DIMENSIONS[1]))))

@@ -9,6 +9,7 @@ class GraphicsEngine:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
+        self.gui = GUI()
         self.layers = [[] for i in range(10)]
 
     def add_to_layer(self, layer, obj):
@@ -28,7 +29,13 @@ class GraphicsEngine:
         for layer in self.layers:
             for obj in layer:
                 obj.draw(self.screen)
+        self.gui.draw_gui(self.screen)
 
+    @staticmethod
+    def arena_to_window(point):
+        new_point = (point[0] - constants.ASTEROID_MAX_RADIUS + constants.GAME_WINDOW_LEFT_EDGE[settable.HAND_MODE],
+                     point[1] - constants.ASTEROID_MAX_RADIUS)
+        return new_point
 
     @classmethod
     def prepare(cls, self):
@@ -42,9 +49,14 @@ class GraphicsEngine:
 
 class GUI:
     def __init__(self):
-        self.menu_state = None
+        self.menu_state = constants.MENU_NONE
+        self.hand_window = pygame.Rect(constants.HAND_WINDOW_POSITION[settable.HAND_MODE],
+                                       (constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
         self.buttons = []
         self.labels = []
+
+    def draw_gui(self, screen):
+        pygame.draw.rect(screen, (255, 255, 255), self.hand_window)
 
 
 class Button:
@@ -84,16 +96,16 @@ class Line(GraphicsObject):
         self.end = end
 
     def draw(self, screen):
-        pygame.draw.line(screen, self.color, utility.vector_add(self.start, constants.PLAYER_GRAPHIC_POSITION[settable.HAND_MODE]),
-                         utility.vector_add(self.end, constants.PLAYER_GRAPHIC_POSITION[settable.HAND_MODE]), self.thickness)
+        pygame.draw.line(screen, self.color, GraphicsEngine.arena_to_window(self.start),
+                         GraphicsEngine.arena_to_window(self.end), self.thickness)
 
 
 class Circle(GraphicsObject):
     def __init__(self, center, radius, color=(255, 255, 255), thickness=0):
         GraphicsObject.__init__(self, color, thickness)
-        self.center = center
+        self.center = utility.tuple_float_to_int(center)
         self.radius = radius
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, utility.vector_add(self.center, constants.PLAYER_GRAPHIC_POSITION[settable.HAND_MODE]),
+        pygame.draw.circle(screen, self.color, GraphicsEngine.arena_to_window(self.center),
                            self.radius, self.thickness)

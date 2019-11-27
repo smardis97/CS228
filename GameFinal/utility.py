@@ -54,3 +54,7 @@ def cartesian_to_polar(v):
     angle = math.degrees(math.atan(v[1]/v[0]))
     magnitude = math.sqrt(v[0]**2 + v[1]**2)
     return angle, magnitude
+
+
+def tuple_float_to_int(v):
+    return int(v[0]), int(v[1])

@@ -61,8 +61,19 @@ class GameObject:
         vector = utility.vector_add((self.position[0], self.position[1]), vector)
         return vector
 
+    def edge_wrap(self):
+        if self.position[0] > constants.GAME_ARENA_DIMENSIONS[0]:
+            self.position[0] = self.position[0] - constants.GAME_ARENA_DIMENSIONS[0]
+        elif self.position[0] < 0:
+            self.position[0] = constants.GAME_ARENA_DIMENSIONS[0] + self.position[0]
+
+        if self.position[1] > constants.GAME_ARENA_DIMENSIONS[1]:
+            self.position[1] = self.position[1] - constants.GAME_ARENA_DIMENSIONS[1]
+        elif self.position[1] < 0:
+            self.position[1] = constants.GAME_ARENA_DIMENSIONS[1] + self.position[1]
+
     @abc.abstractmethod
-    def update(self, player_vel=None):
+    def update(self):
         return NotImplemented
 
     @abc.abstractmethod
@@ -72,8 +83,9 @@ class GameObject:
 
 class Player(GameObject):
     def __init__(self):
-        GameObject.__init__(self, [0, 0], constants.PLAYER_MAX_VEL, constants.PLAYER_MAX_ANG_VEL,
-                            constants.PLAYER_MAX_RADIUS, settable.PLAYER_COLOR, constants.PLAYER_THICKNESS)
+        GameObject.__init__(self, constants.PLAYER_START_POSITION, constants.PLAYER_MAX_VEL,
+                            constants.PLAYER_MAX_ANG_VEL, constants.PLAYER_MAX_RADIUS,
+                            settable.PLAYER_COLOR, constants.PLAYER_THICKNESS)
         self.acceleration = constants.PLAYER_ACCELERATION
         self.angular_acceleration = constants.PLAYER_ANGULAR_ACCELERATION
         self.headings_to_vertices = [(0, constants.PLAYER_MAX_RADIUS),
@@ -94,8 +106,11 @@ class Player(GameObject):
         else:
             raise NotImplementedError
 
-    def update(self, player_vel=None):
+    def update(self):
         self.heading = (self.heading + self.angular_velocity) % constants.CIRCLE_DEG
+        self.position[0] = self.position[0] + self.velocity["x-component"]
+        self.position[1] = self.position[1] + self.velocity["y-component"]
+        self.edge_wrap()
 
     def draw_self_to_layer(self, graphic_engine, layer):
         for vertex in self.headings_to_vertices:
@@ -136,10 +151,11 @@ class Asteroid(GameObject):
                 self.headings_to_vertices.append((vertex_heading, vertex_radius))
         self.has_built = True
 
-    def update(self, player_vel=None):
+    def update(self):
         self.heading = (self.heading + self.angular_velocity) % constants.CIRCLE_DEG
-        self.position[0] = self.position[0] + self.velocity["x-component"] - player_vel["x-component"]
-        self.position[1] = self.position[1] + self.velocity["y-component"] - player_vel["y-component"]
+        self.position[0] = self.position[0] + self.velocity["x-component"]
+        self.position[1] = self.position[1] + self.velocity["y-component"]
+        self.edge_wrap()
 
     def draw_self_to_layer(self, graphic_engine, layer):
         for vertex in self.headings_to_vertices:
@@ -156,13 +172,13 @@ class Bullet(GameObject):
 
 class Snow(GameObject):
     def __init__(self, position):
-        GameObject.__init__(self, position, constants.STAR_MAX_VEL, constants.STAR_MAX_ANG_VEL, settable.STAR_COLOR, 0, False)
-        self.velocity["y-component"] = constants.STAR_VEL
+        GameObject.__init__(self, position, constants.STAR_MAX_VEL, constants.STAR_MAX_ANG_VEL,
+                            constants.STAR_MAX_RADIUS, settable.STAR_COLOR, 0, False)
         self.radius = random.randint(constants.STAR_MIN_RADIUS, constants.STAR_MAX_RADIUS)
 
     def update(self, player_vel=None):
-        self.position[0] = self.position[0] + self.velocity["x-component"] - player_vel["x-component"]
-        self.position[1] = self.position[1] + self.velocity["y-component"] - player_vel["y-component"]
+        self.position[0] = self.position[0] + self.velocity["x-component"]
+        self.position[1] = self.position[1] + self.velocity["y-component"]
 
     def draw_self_to_layer(self, graphic_engine, layer):
         graphic_engine.add_to_layer(layer, graphics.Circle(self.position, self.radius, self.color))
