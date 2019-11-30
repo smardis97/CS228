@@ -28,6 +28,12 @@ class GameObject:
         self.collide_radius = 0
         self.non_collide = not collidable
 
+    def test_collide(self, obj):
+        if utility.calc_distance(self.position, obj.position) < self.collide_radius + obj.get_radius() and\
+           self.can_collide() and obj.can_collide():
+            return True
+        return False
+
     def get_velocity(self):
         return self.velocity["x-component"], self.velocity["y-component"]
 
@@ -92,6 +98,7 @@ class Player(GameObject):
                                      (140, constants.PLAYER_MAX_RADIUS),
                                      (180, constants.PLAYER_MAX_RADIUS / 3),
                                      (220, constants.PLAYER_MAX_RADIUS)]
+        self.collide_radius = self.max_radius * 0.75
 
     def thrust(self):
         new_vel = utility.vector_add((self.velocity["x-component"], self.velocity["y-component"]),
@@ -139,6 +146,15 @@ class Asteroid(GameObject):
         self.angular_velocity = min([ang_vel, self.max_angular_velocity])
         self.has_built = False
         self.build_asteroid()
+        self.collide_radius = self.max_radius * 0.75
+
+    @staticmethod
+    def collide_asteroid(asteroid_1, asteroid_2):
+        normal_vect = utility.vector_subtract(asteroid_1.position, asteroid_2.position)
+        a1_new_vel = utility.reflection_angle(asteroid_1.get_velocity(), normal_vect)
+        a2_new_vel = utility.reflection_angle(asteroid_2.get_velocity(), normal_vect)
+        asteroid_1.set_velocity(a1_new_vel[0], a1_new_vel[1])
+        asteroid_2.set_velocity(a2_new_vel[0], a2_new_vel[1])
 
     def build_asteroid(self):
         if not self.has_built:

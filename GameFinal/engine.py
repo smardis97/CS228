@@ -54,6 +54,7 @@ class GameEngine:
     def update_game(self):
         self.draw_objects()
         self.move_objects()
+        self.check_collisions()
         self.input_update()
 
     def key_listener(self, event):
@@ -85,13 +86,14 @@ class GameEngine:
         self.window.draw()
 
     def check_collisions(self):
-        pass
+        for asteroid_1 in self.game_objects:
+            for asteroid_2 in self.game_objects[self.game_objects.index(asteroid_1)+1:]:
+                if asteroid_1.test_collide(asteroid_2):
+                    game_object.Asteroid.collide_asteroid(asteroid_1, asteroid_2)
 
     def move_objects(self):
         self.player.update()
         for obj in self.game_objects:
-            obj.update()
-        for obj in self.background_objects:
             obj.update()
         self.check_collisions()
 

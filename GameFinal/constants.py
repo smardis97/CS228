@@ -131,8 +131,8 @@ TEST_6_FILE_LEFT = "Wu_test6_left.p"
 
 TRAIN_7_FILE = "Erickson_train7.p"
 TEST_7_FILE = "Erickson_test7.p"
-TRAIN_7_FILE_LEFT = "Huang_train7_left.p"
-TEST_7_FILE_LEFT = "Huang_test7_left.p"
+TRAIN_7_FILE_LEFT = "Landay_train7_left.p"
+TEST_7_FILE_LEFT = "Landay_test7_left.p"
 
 TRAIN_8_FILE = "Erickson_train8.p"
 TEST_8_FILE = "Erickson_test8.p"
