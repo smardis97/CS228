@@ -25,6 +25,8 @@ class GameEngine:
         self.gui = graphics.GUI(self.window)
         self.game_state = constants.GAME_PLAY
         self.controller = Leap.Controller()
+        self.save_number = 0
+        self.opacity_number = 0
         self.previous_number = -1
         self.current_number = -1
         self.correct_count = constants.CORRECT_COUNT
@@ -68,7 +70,7 @@ class GameEngine:
             self.next_bone_index = 0
             self.handle_frame(frame)
             self.test_network()
-        self.gui.update(self.current_number, 0)
+        self.gui.update(self.current_number, self.opacity_number)
         self.draw_objects()
         self.gui.draw_gui()
         self.move_objects()
@@ -108,8 +110,9 @@ class GameEngine:
             if self.correct_count == 0:
                 self.previous_number = self.current_number
                 self.choose_next_number()
-                # TODO: Fire Bullet
+                self.add_bullet()
                 self.correct_count = constants.CORRECT_COUNT
+                self.opacity_number += 1
 
     def key_listener(self, event):
         if event.type == pygame.KEYDOWN:
@@ -139,16 +142,20 @@ class GameEngine:
                     gesture_data[f][b][1][0] = bone.next_joint[0]
                     gesture_data[f][b][1][1] = bone.next_joint[1]
                     gesture_data[f][b][1][2] = bone.next_joint[2]
-            pickle_out = open("{}{}".format(constants.DATA_PATH, "example_9.dat"), "wb")
+            pickle_out = open("{}{}".format(constants.DATA_PATH, "example_{}.dat".format(self.save_number)), "wb")
             pickle.dump(gesture_data, pickle_out)
             print "SAVED"
             pickle_out.close()
+            self.save_number += 1
 
     def update_mouse_pos(self, event):
         pass
 
     def mouse_listener(self, event):
         pass
+
+    def add_bullet(self):
+        self.game_objects.append(game_object.Bullet(self.player.heading, self.player.position))
 
     def draw_objects(self):
         self.player.draw_self_to_layer(self.window, 5)

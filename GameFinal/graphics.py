@@ -53,17 +53,18 @@ class GUI:
     def __init__(self, window):
         self.window = window
         self.menu_state = constants.MENU_NONE
-        self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
+        self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH), pygame.SRCALPHA)
         self.hand_window.fill((255, 255, 255))
         self.current_number = -1
         self.current_success = 0
-        self.objects = []
+        self.opacity = 0
+        self.objects = [[], []]
         self.buttons = []
         self.labels = []
         self.examples = [pickle.load(open("{}example_{}.dat".format(constants.DATA_PATH, i))) for i in range(10)]
 
-    def add_object(self, obj):
-        self.objects.append(obj)
+    def add_object(self, obj, i):
+        self.objects[i].append(obj)
 
     def draw_example(self):
         example = self.examples[self.current_number]
@@ -75,30 +76,30 @@ class GUI:
 
     def clear(self):
         del self.objects[:]
-        self.objects = []
+        self.objects = [[], []]
 
     def update(self, current, success):
+        self.opacity = min([100 + 10 * self.current_success, 255])
         self.current_number = current
         self.current_success = success
+        self.draw_example()
 
     def draw_gui(self):
         self.hand_window.fill((255, 255, 255))
         text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 40),
                                        str(self.current_number), True, (0, 0, 0))
         self.hand_window.blit(text, (10, 10))
-
-        for obj in self.objects:
-            obj.draw(self.hand_window)
-        self.draw_example()
+        for list in self.objects:
+            for obj in list:
+                obj.draw(self.hand_window)
         self.window.screen.blit(self.hand_window, constants.HAND_WINDOW_POSITION[settable.HAND_MODE])
         self.clear()
 
     def draw_example_bone(self, base, tip, bone_type):
-        opacity = max([140 - 10 * self.current_success, 0])
-        self.add_object(Line(base, tip, (0, 0, 0, opacity), 4 * (3 - bone_type) + 2))
+        self.add_object(Line(base, tip, (self.opacity, self.opacity, self.opacity), 4 * (3 - bone_type) + 2), 0)
 
     def draw_bone(self, base, tip, bone_type):
-        self.add_object(Line(base, tip, (0, 0, 0), 2 * (3 - bone_type) + 1))
+        self.add_object(Line(base, tip, (0, 0, 0), 2 * (3 - bone_type) + 1), 1)
 
     @staticmethod
     def leap_to_window(point):

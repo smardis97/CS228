@@ -188,8 +188,20 @@ class Asteroid(GameObject):
 
 
 class Bullet(GameObject):
-    def __init__(self):
-        GameObject.__init__(self)
+    def __init__(self, heading, position):
+        GameObject.__init__(self, position, constants.BULLET_VEL, constants.BULLET_MAX_ANG_VEL, constants.BULLET_RADIUS, settable.BULLET_COLOR, 0)
+        self.set_velocity(heading, self.max_velocity)
+        self.range = constants.BULLET_RANGE
+
+    def update(self):
+        self.position[0] = self.position[0] + self.velocity["x-component"]
+        self.position[1] = self.position[1] + self.velocity["y-component"]
+        self.range -= 1
+        if self.range <= 0:
+            del self
+
+    def draw_self_to_layer(self, graphic_engine, layer):
+        graphic_engine.add_to_layer(layer, graphics.Circle(self.position, self.max_radius, self.color))
 
 
 class Snow(GameObject):
