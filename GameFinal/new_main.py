@@ -26,14 +26,13 @@ def main():
     #
     while True:
         for event in pygame.event.get():
+            #print event
             if event.type == pygame.QUIT:
                 exit(0)
             else:
                 if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
                     game_engine.key_listener(event)
-                elif event.type == pygame.MOUSEMOTION:
-                    game_engine.update_mouse_pos(event)
-                elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
+                elif event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     game_engine.mouse_listener(event)
         graphics.GraphicsEngine.prepare(game_engine.window)
 

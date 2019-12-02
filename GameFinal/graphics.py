@@ -4,6 +4,7 @@ import constants
 import utility
 import abc
 import settable
+import buttons
 
 
 class GraphicsEngine:
@@ -52,7 +53,9 @@ class GraphicsEngine:
 class GUI:
     def __init__(self, window):
         self.window = window
-        self.menu_state = constants.MENU_NONE
+        self.menu_state = constants.MENU_MAIN
+        self.menu_window = pygame.Surface(constants.GUI_WINDOW_DIMENSIONS)
+        self.menu_window.fill((0, 0, 0))
         self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH), pygame.SRCALPHA)
         self.hand_window.fill((255, 255, 255))
         self.current_number = -1
@@ -62,6 +65,36 @@ class GUI:
         self.buttons = []
         self.labels = []
         self.examples = [pickle.load(open("{}example_{}.dat".format(constants.DATA_PATH, i))) for i in range(10)]
+        self.build_gui()
+
+    def state_change(self, new_state):
+        self.menu_state = new_state
+        self.build_gui()
+
+    def mouse_update(self, mouse_event):
+        for button in self.buttons:
+            button.contains_mouse(mouse_event.__dict__['pos'])
+
+    def mouse_click(self, mouse_event):
+        for button in self.buttons:
+            if button.contains_mouse(mouse_event.__dict__['pos']):
+                button.click()
+
+    def build_gui(self):
+        del self.buttons[:]
+        self.buttons = []
+        del self.labels[:]
+        self.labels = []
+        if self.menu_state == constants.MENU_MAIN:
+            self.buttons.append(Button((50, 50), constants.GUI_BUTTON_COLOR, "TEST", buttons.play, constants.GUI_BUTTON_HIGHLIGHT))
+        elif self.menu_state == constants.MENU_LOGIN:
+            pass
+        elif self.menu_state == constants.MENU_NEW_CHAR:
+            pass
+        elif self.menu_state == constants.MENU_SETTINGS:
+            pass
+        else:
+            pass
 
     def add_object(self, obj, i):
         self.objects[i].append(obj)
@@ -85,7 +118,8 @@ class GUI:
         self.draw_example()
 
     def draw_gui(self):
-        self.hand_window.fill((255, 255, 255))
+        self.menu_window.fill(constants.GUI_WINDOW_COLOR)
+        self.hand_window.fill(constants.HAND_WINDOW_COLOR)
         text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 40),
                                        str(self.current_number), True, (0, 0, 0))
         self.hand_window.blit(text, (10, 10))
@@ -93,6 +127,9 @@ class GUI:
             for obj in list:
                 obj.draw(self.hand_window)
         self.window.screen.blit(self.hand_window, constants.HAND_WINDOW_POSITION[settable.HAND_MODE])
+        for button in self.buttons:
+            self.menu_window.blit(button.draw(), button.position)
+        self.window.screen.blit(self.menu_window, constants.GUI_WINDOW_POSITION)
         self.clear()
 
     def draw_example_bone(self, base, tip, bone_type):
@@ -117,18 +154,32 @@ class GUI:
 
 
 class Button:
-    def __init__(self, position, size, color, text, highlight, func):
-        self.rect = pygame.Rect(position, size)
+    def __init__(self, position, color, text, func, highlight=None):
+        self.position = position
+        self.absolute_pos = utility.vector_add(constants.GUI_WINDOW_POSITION, self.position)
+        self.rect = pygame.Surface(constants.BUTTON_DIMENSIONS)
+        self.text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(),
+                                                             constants.BUTTON_LABEL_SIZE
+                                                             ),
+                                            text, True, constants.GUI_BUTTON_TEXT_COLOR)
         self.color = color
         self.highlight = highlight if highlight is not None else color
-        self.text = text
         self.action = func
+        self.hover = False
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+    def draw(self):
+        color = self.color if not self.hover else self.highlight
+        self.rect.fill(color)
+        self.rect.blit(self.text, constants.BUTTON_LABEL_OFFSET)
+        return self.rect
 
     def contains_mouse(self, mouse_pos):
-        return self.rect.collidepoint(mouse_pos[0], mouse_pos[1])
+        top_left_corner = self.absolute_pos
+        bottom_right_corner = utility.vector_add(self.absolute_pos, self.rect.get_size())
+        x_contains = top_left_corner[0] <= mouse_pos[0] <= bottom_right_corner[0]
+        y_contains = top_left_corner[1] <= mouse_pos[1] <= bottom_right_corner[1]
+        self.hover = x_contains and y_contains
+        return self.hover
 
     def click(self, **kwargs):
         return self.action(**kwargs)

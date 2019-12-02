@@ -23,7 +23,7 @@ class GameEngine:
         self.player = game_object.Player()
         self.window = graphics.GraphicsEngine()
         self.gui = graphics.GUI(self.window)
-        self.game_state = constants.GAME_PLAY
+        self.game_state = constants.GAME_MENU
         self.controller = Leap.Controller()
         self.save_number = 0
         self.opacity_number = 0
@@ -120,6 +120,8 @@ class GameEngine:
                 self.key_status[event.__dict__["key"]] = True
             elif event.__dict__["key"] == 304:
                 self.key_status[event.__dict__["key"]] = True
+            elif event.__dict__["key"] == 27:
+                exit(0)
 
         elif event.type == pygame.KEYUP:
             if 97 <= event.__dict__["key"] <= 122:
@@ -148,11 +150,14 @@ class GameEngine:
             pickle_out.close()
             self.save_number += 1
 
-    def update_mouse_pos(self, event):
-        pass
-
     def mouse_listener(self, event):
-        pass
+        if self.game_state == constants.GAME_MENU:
+            if event.type == pygame.MOUSEMOTION:
+                self.gui.mouse_update(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.gui.mouse_click(event)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                pass
 
     def add_bullet(self):
         self.game_objects.append(game_object.Bullet(self.player.heading, self.player.position))
