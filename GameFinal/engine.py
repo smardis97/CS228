@@ -22,9 +22,10 @@ class GameEngine:
         self.background_objects = []
         self.player = game_object.Player()
         self.window = graphics.GraphicsEngine()
-        self.gui = graphics.GUI(self.window)
+        self.gui = graphics.GUI(self.window, self)
         self.game_state = constants.GAME_MENU
         self.controller = Leap.Controller()
+        self.game_start = time.time()
         self.save_number = 0
         self.opacity_number = 0
         self.previous_number = -1
@@ -63,8 +64,31 @@ class GameEngine:
             304: False
         }
         self.choose_next_number()
+        self.spawn_stars()
+
+    def initialize_game(self):
+        del self.game_objects[:]
+        self.game_objects = []
+        self.player.set_velocity(0, 0)
+        self.player.reset_position()
+        self.game_start = time.time()
+        for i in range(4):
+            self.spawn_asteroid()
+        self.game_state = constants.GAME_PLAY
+        self.gui.menu_state = constants.MENU_NONE
+
+    def game_level(self):
+        return int(math.floor(self.elapsed_time() / 15))
+
+    def elapsed_time(self):
+        elapsed = time.time() - self.game_start
+        return elapsed
 
     def update_game(self):
+        game_level = self.game_level()
+        if self.count_asteroids() < game_level + 3:
+            for i in range(game_level + 3 - self.count_asteroids()):
+                self.spawn_asteroid()
         frame = self.controller.frame()
         if len(frame.hands) > 0:
             self.next_bone_index = 0
@@ -115,21 +139,23 @@ class GameEngine:
                 self.opacity_number += 1
 
     def key_listener(self, event):
-        if event.type == pygame.KEYDOWN:
-            if ord('a') <= event.__dict__["key"] <= ord('z'):
-                self.key_status[event.__dict__["key"]] = True
-            elif event.__dict__["key"] == 304:
-                self.key_status[event.__dict__["key"]] = True
-            elif event.__dict__["key"] == 27:
-                exit(0)
-
-        elif event.type == pygame.KEYUP:
-            if 97 <= event.__dict__["key"] <= 122:
-                self.key_status[event.__dict__["key"]] = False
-            elif event.__dict__["key"] == 304:
-                self.key_status[event.__dict__["key"]] = False
-            elif event.__dict__["key"] == 32:
-                self.save_hand()
+        if self.game_state == constants.GAME_PLAY:
+            if event.type == pygame.KEYDOWN:
+                if ord('a') <= event.__dict__["key"] <= ord('z'):
+                    self.key_status[event.__dict__["key"]] = True
+                elif event.__dict__["key"] == 304:
+                    self.key_status[event.__dict__["key"]] = True
+                elif event.__dict__["key"] == 27:
+                    exit(0)
+            elif event.type == pygame.KEYUP:
+                if 97 <= event.__dict__["key"] <= 122:
+                    self.key_status[event.__dict__["key"]] = False
+                elif event.__dict__["key"] == 304:
+                    self.key_status[event.__dict__["key"]] = False
+                elif event.__dict__["key"] == 32:
+                    self.save_hand()
+        elif self.game_state == constants.GAME_MENU:
+            self.gui.key_listener(event)
 
     def save_hand(self):
         frame = self.controller.frame()
@@ -171,12 +197,22 @@ class GameEngine:
         self.window.draw()
         self.window.clear()
 
+    def count_asteroids(self):
+        count = 0
+        for obj in self.game_objects:
+            if type(obj) == game_object.Asteroid:
+                count += 1
+        return count
+
     def check_collisions(self):
-        for asteroid_1 in self.game_objects:
-            for asteroid_2 in self.game_objects[self.game_objects.index(asteroid_1)+1:]:
-                if asteroid_1.test_collide(asteroid_2):
-                    pass
-                    #game_object.Asteroid.collide_asteroid(asteroid_1, asteroid_2)
+        for object_1 in self.game_objects:
+            for object_2 in self.game_objects[self.game_objects.index(object_1)+1:]:
+                if object_1.test_collide(object_2):
+                    if type(object_1) == game_object.Bullet:
+                        del object_2
+                    else:
+                        pass
+                        #game_object.Asteroid.collide_asteroid(asteroid_1, asteroid_2)
 
     def move_objects(self):
         self.player.update()

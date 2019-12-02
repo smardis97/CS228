@@ -16,9 +16,6 @@ import time
 
 def main():
     game_engine = engine.GameEngine()
-    for i in range(4):
-        game_engine.spawn_asteroid()
-    game_engine.spawn_stars()
     #
     #
     #  MAIN GAME LOOP

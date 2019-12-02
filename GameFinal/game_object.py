@@ -100,6 +100,9 @@ class Player(GameObject):
                                      (220, constants.PLAYER_MAX_RADIUS)]
         self.collide_radius = self.max_radius * 0.75
 
+    def reset_position(self):
+        self.position = [constants.PLAYER_START_POSITION[0], constants.PLAYER_START_POSITION[1]]
+
     def thrust(self):
         new_vel = utility.vector_add((self.velocity["x-component"], self.velocity["y-component"]),
                                      utility.get_vector(self.heading, self.acceleration))
