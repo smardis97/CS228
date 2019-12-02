@@ -1,4 +1,5 @@
 import pygame
+import pickle
 import constants
 import utility
 import abc
@@ -9,8 +10,10 @@ class GraphicsEngine:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
-        self.gui = GUI()
         self.layers = [[] for i in range(10)]
+
+    def draw_example_bone(self, base, tip, bone_type):
+        pass
 
     def add_to_layer(self, layer, obj):
         if 0 <= layer < 10:
@@ -29,7 +32,6 @@ class GraphicsEngine:
         for layer in self.layers:
             for obj in layer:
                 obj.draw(self.screen)
-        self.gui.draw_gui(self.screen)
 
     @staticmethod
     def arena_to_window(point):
@@ -48,15 +50,69 @@ class GraphicsEngine:
 
 
 class GUI:
-    def __init__(self):
+    def __init__(self, window):
+        self.window = window
         self.menu_state = constants.MENU_NONE
-        self.hand_window = pygame.Rect(constants.HAND_WINDOW_POSITION[settable.HAND_MODE],
-                                       (constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
+        self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
+        self.hand_window.fill((255, 255, 255))
+        self.current_number = -1
+        self.current_success = 0
+        self.objects = []
         self.buttons = []
         self.labels = []
+        self.examples = [pickle.load(open("{}example_{}.dat".format(constants.DATA_PATH, i))) for i in range(10)]
 
-    def draw_gui(self, screen):
-        pygame.draw.rect(screen, (255, 255, 255), self.hand_window)
+    def add_object(self, obj):
+        self.objects.append(obj)
+
+    def draw_example(self):
+        example = self.examples[self.current_number]
+        for f in range(5):
+            for b in range(4):
+                base = GUI.leap_to_window(example[f][b][0])
+                tip = GUI.leap_to_window(example[f][b][1])
+                self.draw_example_bone(base, tip, b)
+
+    def clear(self):
+        del self.objects[:]
+        self.objects = []
+
+    def update(self, current, success):
+        self.current_number = current
+        self.current_success = success
+
+    def draw_gui(self):
+        self.hand_window.fill((255, 255, 255))
+        text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 40),
+                                       str(self.current_number), True, (0, 0, 0))
+        self.hand_window.blit(text, (10, 10))
+
+        for obj in self.objects:
+            obj.draw(self.hand_window)
+        self.draw_example()
+        self.window.screen.blit(self.hand_window, constants.HAND_WINDOW_POSITION[settable.HAND_MODE])
+        self.clear()
+
+    def draw_example_bone(self, base, tip, bone_type):
+        opacity = max([140 - 10 * self.current_success, 0])
+        self.add_object(Line(base, tip, (0, 0, 0, opacity), 4 * (3 - bone_type) + 2))
+
+    def draw_bone(self, base, tip, bone_type):
+        self.add_object(Line(base, tip, (0, 0, 0), 2 * (3 - bone_type) + 1))
+
+    @staticmethod
+    def leap_to_window(point):
+        new_point = (
+            utility.scale_to_range(point[0], constants.LEAP_VISION_MIN_COORDS[0], constants.LEAP_VISION_MAX_COORDS[0],
+                                   - constants.HAND_GRAPHICAL_CENTER[0],
+                                   constants.HAND_REGION_DIMENSIONS[0] - constants.HAND_GRAPHICAL_CENTER[0])
+            + constants.HAND_CENTERING_ADJUST[0],
+            utility.scale_to_range(point[2], constants.LEAP_VISION_MIN_COORDS[2], constants.LEAP_VISION_MAX_COORDS[2],
+                                   - constants.HAND_GRAPHICAL_CENTER[1],
+                                   constants.HAND_REGION_DIMENSIONS[1] - constants.HAND_GRAPHICAL_CENTER[1])
+            + constants.HAND_CENTERING_ADJUST[1]
+        )
+        return new_point
 
 
 class Button:
@@ -109,3 +165,12 @@ class Circle(GraphicsObject):
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, GraphicsEngine.arena_to_window(self.center),
                            self.radius, self.thickness)
+
+
+class Rectangle(GraphicsObject):
+    def __init__(self, position, dimensions, color):
+        GraphicsObject.__init__(self, color, 0)
+        self.rect = pygame.Rect(position, dimensions)
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)

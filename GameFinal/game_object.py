@@ -146,15 +146,19 @@ class Asteroid(GameObject):
         self.angular_velocity = min([ang_vel, self.max_angular_velocity])
         self.has_built = False
         self.build_asteroid()
-        self.collide_radius = self.max_radius * 0.75
+        self.collide_radius = self.max_radius
+        self.recent_collide = 0
 
     @staticmethod
     def collide_asteroid(asteroid_1, asteroid_2):
-        normal_vect = utility.vector_subtract(asteroid_1.position, asteroid_2.position)
-        a1_new_vel = utility.reflection_angle(asteroid_1.get_velocity(), normal_vect)
-        a2_new_vel = utility.reflection_angle(asteroid_2.get_velocity(), normal_vect)
-        asteroid_1.set_velocity(a1_new_vel[0], a1_new_vel[1])
-        asteroid_2.set_velocity(a2_new_vel[0], a2_new_vel[1])
+        if asteroid_1.recent_collide == 0 and asteroid_2.recent_collide == 0:
+            normal_vect = utility.vector_subtract(asteroid_1.position, asteroid_2.position)
+            a1_new_vel = utility.reflection_angle(asteroid_1.get_velocity(), normal_vect)
+            a2_new_vel = utility.reflection_angle(asteroid_2.get_velocity(), normal_vect)
+            asteroid_1.set_velocity(a1_new_vel[0], a1_new_vel[1])
+            asteroid_2.set_velocity(a2_new_vel[0], a2_new_vel[1])
+            asteroid_1.recent_collide = 10
+            asteroid_2.recent_collide = 10
 
     def build_asteroid(self):
         if not self.has_built:
@@ -168,6 +172,8 @@ class Asteroid(GameObject):
         self.has_built = True
 
     def update(self):
+        if self.recent_collide > 0:
+            self.recent_collide -= 1
         self.heading = (self.heading + self.angular_velocity) % constants.CIRCLE_DEG
         self.position[0] = self.position[0] + self.velocity["x-component"]
         self.position[1] = self.position[1] + self.velocity["y-component"]

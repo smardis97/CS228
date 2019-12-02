@@ -55,9 +55,7 @@ def polar_to_cartesian(v):
 
 
 def cartesian_to_polar(v):
-    print v
     magnitude = math.sqrt(v[0]**2 + v[1]**2)
-    print v[0] / magnitude, magnitude
     angle = math.acos(v[0] / magnitude) if v[1] >= 0 else math.acos(v[0] / magnitude) + constants.CIRCLE_DEG
     return math.degrees(angle), magnitude
 
@@ -89,5 +87,18 @@ def tuple_float_to_int(v):
 
 def calc_distance(point_a, point_b):
     return math.sqrt((point_b[0] - point_a[0])**2 + (point_b[1] - point_a[1])**2)
+
+
+def center_data(l):
+    x_coords = l[0, ::3]
+    y_coords = l[0, 1::3]
+    z_coords = l[0, 2::3]
+    x_mean = x_coords.mean()
+    y_mean = y_coords.mean()
+    z_mean = z_coords.mean()
+    l[0, ::3] = x_coords - x_mean
+    l[0, 1::3] = y_coords - y_mean
+    l[0, 2::3] = z_coords - z_mean
+    return l
 
 
