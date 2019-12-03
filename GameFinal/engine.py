@@ -12,9 +12,9 @@ import pygame
 import Leap
 
 # Local Imports
-import constants
-import game_object
-import graphics
+from constants import *
+from game_object import *
+from graphics import *
 import utility
 import dict
 import settable
@@ -52,17 +52,17 @@ class GameEngine:
         self.gui = graphics.GUI(self.window, self)
         self.game_objects = []
         self.background_objects = []
-        self.player = game_object.Player()
+        self.player = Player()
         #
         # GAME LOGIC VARIABLES -------------------------------------------------------------------- GAME LOGIC VARIABLES
         #
         self.current_user = None
-        self.game_state = constants.GAME_MENU
+        self.game_state = GAME_MENU
         self.game_start = time.time()
         self.save_number = 0
         self.previous_number = -1
         self.current_number = -1
-        self.correct_count = constants.CORRECT_COUNT
+        self.correct_count = CORRECT_COUNT
         self.key_status = {
             ord('a'): False,
             ord('b'): False,
@@ -97,7 +97,7 @@ class GameEngine:
         #
         self.controller = Leap.Controller()
         self.test_data = np.zeros((1, 30), dtype='f')
-        self.classifier = pickle.load(open("{}{}".format(constants.DATA_PATH, constants.NN_CLASSIFIER_FILE)))
+        self.classifier = pickle.load(open("{}{}".format(DATA_PATH, NN_CLASSIFIER_FILE)))
         self.next_bone_index = 0
 
         # Called to setup basic functionality
@@ -128,8 +128,8 @@ class GameEngine:
         self.player.heading = 0
         self.player.reset_position()
         self.game_start = time.time()
-        self.game_state = constants.GAME_PLAY
-        self.gui.menu_state = constants.MENU_NONE
+        self.game_state = GAME_PLAY
+        self.gui.menu_state = MENU_NONE
         self.choose_next_number()
 
     def update_game(self):
@@ -158,7 +158,7 @@ class GameEngine:
 
         self.gui.update(self.current_number,
                         # number of times the current player has successfully signed the requested number
-                        dict.database[self.current_user][constants.SUCCESSES_KEY[self.current_number]]
+                        dict.database[self.current_user][SUCCESSES_KEY[self.current_number]]
                         if self.current_user is not None else 0)
         self.gui.draw_gui()
         self.move_objects()
@@ -180,22 +180,22 @@ class GameEngine:
         Parameters:
             event (pygame.event): A KEYUP or KEYDOWN event from main.
         """
-        if self.game_state == constants.GAME_PLAY:
+        if self.game_state == GAME_PLAY:
             if event.type == pygame.KEYDOWN:
                 if ord('a') <= event.__dict__["key"] <= ord('z'):
                     self.key_status[event.__dict__["key"]] = True
-                elif event.__dict__["key"] == 304:
+                elif event.__dict__["key"] == 304:  # Shift
                     self.key_status[event.__dict__["key"]] = True
-                elif event.__dict__["key"] == 27:
+                elif event.__dict__["key"] == 27:  # Esc
                     exit(0)
             elif event.type == pygame.KEYUP:
                 if 97 <= event.__dict__["key"] <= 122:
                     self.key_status[event.__dict__["key"]] = False
-                elif event.__dict__["key"] == 304:
+                elif event.__dict__["key"] == 304:  # Shift
                     self.key_status[event.__dict__["key"]] = False
-                elif event.__dict__["key"] == 32:
+                elif event.__dict__["key"] == 32:  # Space bar
                     self.__save_hand()
-        elif self.game_state == constants.GAME_MENU:
+        elif self.game_state == GAME_MENU:
             self.gui.key_listener(event)
 
     def mouse_listener(self, event):
@@ -207,7 +207,7 @@ class GameEngine:
         Parameters:
             event (pygame.event): A MOUSEMOTION, MOUSEBUTTONUP, or MOUSEBUTTONDOWN event from main.
         """
-        if self.game_state == constants.GAME_MENU:
+        if self.game_state == GAME_MENU:
             if event.type == pygame.MOUSEMOTION:
                 self.gui.mouse_update(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -225,7 +225,7 @@ class GameEngine:
             self.player.turn('right')
         if self.key_status[ord('w')]:
             self.player.thrust()
-        if self.key_status[304]:
+        if self.key_status[304]:  # Shift
             self.player.brake()
 
     ####################################################################################################################
@@ -262,9 +262,9 @@ class GameEngine:
             bone        (Leap.bone):    Positional data of bone relative to the Leap Motion Device.
             bone_type   (int):          Int representing which bone in the finger bone describes.
         """
-        base = bone.prev_joint
+        base = bone.prev_joint  # joint of current bone that is closest to the wrist
         base = graphics.GUI.leap_to_window(base)  # rescale to be relative to the gui hand_window
-        tip = bone.next_joint
+        tip = bone.next_joint  # joint of current bone that is furthest from the wrist
         if bone_type == 0 or bone_type == 3:  # only the first knuckle and finger tip are stored in test_data
             self.test_data[0, self.next_bone_index] = bone.next_joint[0]
             self.test_data[0, self.next_bone_index + 1] = bone.next_joint[1]
@@ -277,8 +277,9 @@ class GameEngine:
         """
         Tests test_data against the training data in classifier.
         """
-        if self.game_state == constants.GAME_PLAY:  # only test if game is playing
+        if self.game_state == GAME_PLAY:  # only test if game is playing
             self.test_data = utility.center_data(self.test_data)
+            # if the current sign matches the current_number
             if self.current_number == self.classifier.Predict(self.test_data):
                 self.correct_count -= 1
                 if self.correct_count == 0:  # only accept the sign if it is correct for multiple cycles
@@ -289,9 +290,9 @@ class GameEngine:
                     # Signing correctly launches a bullet from the player
                     #
                     self.add_bullet()
-                    self.correct_count = constants.CORRECT_COUNT  # reset correct_count
+                    self.correct_count = CORRECT_COUNT  # reset correct_count
             else:
-                self.correct_count = constants.CORRECT_COUNT  # reset correct_count
+                self.correct_count = CORRECT_COUNT  # reset correct_count
 
     ####################################################################################################################
     # BASIC GAME FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BASIC GAME FUNCTIONS #
@@ -333,14 +334,14 @@ class GameEngine:
         Increment the number of attempts of current_number by current_user
         """
         if self.current_user is not None:
-            dict.database[self.current_user][constants.ATTEMPTS_KEY[self.current_number]] += 1
+            dict.database[self.current_user][ATTEMPTS_KEY[self.current_number]] += 1
 
     def success_increment(self):
         """
         Increment the number of successes of current_number by current_user
         """
         if self.current_user is not None:
-            dict.database[self.current_user][constants.SUCCESSES_KEY[self.current_number]] += 1
+            dict.database[self.current_user][SUCCESSES_KEY[self.current_number]] += 1
 
     def count_asteroids(self):
         """
@@ -348,7 +349,7 @@ class GameEngine:
         """
         count = 0
         for obj in self.game_objects:
-            if type(obj) == game_object.Asteroid:
+            if type(obj) == Asteroid:
                 count += 1
         return count
 
@@ -360,24 +361,24 @@ class GameEngine:
         """
         Add a new Bullet at the player's location.
         """
-        self.game_objects.append(game_object.Bullet(self.player.heading, self.player.position))
+        self.game_objects.append(Bullet(self.player.heading, self.player.position))
 
     def spawn_asteroid(self):
         """
         Spawn a new Asteroid in a random position off screen.
         """
-        self.game_objects.append(game_object.Asteroid(GameEngine.__asteroid_position(),
+        self.game_objects.append(Asteroid(GameEngine.__asteroid_position(),
                                                       utility.polar_to_cartesian(GameEngine.__random_velocity()),
-                                                      random.randint(- constants.ASTEROID_MAX_ANG_VEL,
-                                                                     constants.ASTEROID_MAX_ANG_VEL)))
+                                                      random.randint(- ASTEROID_MAX_ANG_VEL,
+                                                                     ASTEROID_MAX_ANG_VEL)))
 
     def spawn_stars(self):
         """
         Spawn stars in random positions in the game arena.
         """
-        for i in range(constants.STAR_COUNT):
-            self.background_objects.append(game_object.Snow((random.randint(0, constants.GAME_ARENA_DIMENSIONS[0]),
-                                                             random.randint(0, constants.GAME_ARENA_DIMENSIONS[1]))))
+        for i in range(STAR_COUNT):
+            self.background_objects.append(Snow((random.randint(0, GAME_ARENA_DIMENSIONS[0]),
+                                                             random.randint(0, GAME_ARENA_DIMENSIONS[1]))))
 
     ####################################################################################################################
     # OBJECT MOVEMENT AND INTERACTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OBJECT MOVEMENT AND INTERACTION #
@@ -408,15 +409,19 @@ class GameEngine:
         """
         Check for collisions between Asteroids and Bullets, and between player and Asteroids.
         """
+        # for all objects in game_objects
         for object_1 in self.game_objects:
-            if object_1.test_collide(self.player) and self.game_state == constants.GAME_PLAY:
-                self.game_state = constants.GAME_MENU
-                self.gui.state_change(constants.MENU_OVER)
+            # if game is playing and object_1 is colliding with player
+            if object_1.test_collide(self.player) and self.game_state == GAME_PLAY:
+                self.game_state = GAME_MENU
+                self.gui.state_change(MENU_OVER)
+            # for all OTHER objects in game_objects
             for object_2 in self.game_objects[self.game_objects.index(object_1) + 1:]:
                 if object_1.test_collide(object_2):
-                    if type(object_1) == game_object.Bullet:
+                    if type(object_1) == Bullet:
                         del object_2
                     else:
+                        # TODO fix asteroid collisions
                         pass
                         # game_object.Asteroid.collide_asteroid(asteroid_1, asteroid_2)
 
@@ -434,7 +439,7 @@ class GameEngine:
             magnitude   (int):          The magnitude of the hypotenuse of the new velocity.
         """
         heading = random.randint(0, 360)
-        magnitude = random.randint(constants.ASTEROID_MIN_VEL, constants.ASTEROID_MAX_VEL)
+        magnitude = random.randint(ASTEROID_MIN_VEL, ASTEROID_MAX_VEL)
         return heading, magnitude
 
     @staticmethod
@@ -449,8 +454,8 @@ class GameEngine:
             x_pos (int): X value of the new position.
             y_pos (int): Y value of teh new position.
         """
-        x_pos = random.randint(- constants.ASTEROID_MAX_RADIUS, constants.ASTEROID_MAX_RADIUS)
-        y_pos = random.randint(- constants.ASTEROID_MAX_RADIUS, constants.ASTEROID_MAX_RADIUS)
+        x_pos = random.randint(- ASTEROID_MAX_RADIUS, ASTEROID_MAX_RADIUS)
+        y_pos = random.randint(- ASTEROID_MAX_RADIUS, ASTEROID_MAX_RADIUS)
         return x_pos, y_pos
 
     ####################################################################################################################
@@ -461,7 +466,7 @@ class GameEngine:
         """
         Save an example hand image as example_{save_number}.dat, increment save_number.
         """
-        if constants.DEBUG:
+        if DEBUG:
             frame = self.controller.frame()
             if len(frame.hands) > 0:
                 gesture_data = np.zeros((5, 4, 2, 3), dtype='f')
@@ -474,7 +479,7 @@ class GameEngine:
                         gesture_data[f][b][1][0] = bone.next_joint[0]
                         gesture_data[f][b][1][1] = bone.next_joint[1]
                         gesture_data[f][b][1][2] = bone.next_joint[2]
-                pickle_out = open("{}{}".format(constants.DATA_PATH, "example_{}.dat".format(self.save_number % 10)),
+                pickle_out = open("{}{}".format(DATA_PATH, "example_{}.dat".format(self.save_number % 10)),
                                   "wb")
                 pickle.dump(gesture_data, pickle_out)
                 print "SAVED"
