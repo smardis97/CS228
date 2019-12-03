@@ -52,7 +52,7 @@ class GameObject:
     def set_velocity(self, heading, magnitude):
         heading = heading % constants.CIRCLE_DEG
         magnitude = min([magnitude, self.max_velocity])
-        new_vel = utility.get_vector(heading, magnitude)
+        new_vel = utility.polar_to_cartesian((heading, magnitude))
         self.velocity["x-component"] = new_vel[0]
         self.velocity["y-component"] = new_vel[1]
 
@@ -110,9 +110,11 @@ class Player(GameObject):
 
     def turn(self, direction):
         if direction == "right":
-            self.angular_velocity = min([self.max_angular_velocity, self.angular_velocity + self.angular_acceleration])
+            self.heading = (self.heading + self.angular_acceleration) % constants.CIRCLE_DEG
+            #self.angular_velocity = min([self.max_angular_velocity, self.angular_velocity + self.angular_acceleration])
         elif direction == "left":
-            self.angular_velocity = max([-self.max_angular_velocity, self.angular_velocity - self.angular_acceleration])
+            self.heading = (self.heading - self.angular_acceleration) % constants.CIRCLE_DEG
+            #self.angular_velocity = max([-self.max_angular_velocity, self.angular_velocity - self.angular_acceleration])
         else:
             raise NotImplementedError
 

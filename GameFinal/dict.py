@@ -1,4 +1,5 @@
 import pickle
+from constants import LOGIN_KEY, ATTEMPTS_KEY, SUCCESSES_KEY
 import constants
 
 database = {}
@@ -8,48 +9,74 @@ def start_up():
     global database
     database = pickle.load(open("{}{}".format(constants.DATA_PATH, constants.USER_DATABASE_FILE), 'rb'))
 
-    user_name = raw_input('Please enter your name: ')
+
+def check_name(user_name):
+    return user_name in database
+
+
+def login(user_name):
+    if check_name(user_name):
+        database[user_name][LOGIN_KEY] += 1
+        return user_name
+    else:
+        return None
+
+
+def new_user(user_name):
+    if not check_name(user_name):
+        database[user_name] = {
+            LOGIN_KEY: 1,
+            ATTEMPTS_KEY[0]: 0,
+            SUCCESSES_KEY[0]: 0,
+            ATTEMPTS_KEY[1]: 0,
+            SUCCESSES_KEY[1]: 0,
+            ATTEMPTS_KEY[2]: 0,
+            SUCCESSES_KEY[2]: 0,
+            ATTEMPTS_KEY[3]: 0,
+            SUCCESSES_KEY[3]: 0,
+            ATTEMPTS_KEY[4]: 0,
+            SUCCESSES_KEY[4]: 0,
+            ATTEMPTS_KEY[5]: 0,
+            SUCCESSES_KEY[5]: 0,
+            ATTEMPTS_KEY[6]: 0,
+            SUCCESSES_KEY[6]: 0,
+            ATTEMPTS_KEY[7]: 0,
+            SUCCESSES_KEY[7]: 0,
+            ATTEMPTS_KEY[8]: 0,
+            SUCCESSES_KEY[8]: 0,
+            ATTEMPTS_KEY[9]: 0,
+            SUCCESSES_KEY[9]: 0,
+        }
     return user_name
 
 
-def check_user(user_name):
+def auto_login(user_name):
     if user_name in database:
-        database[user_name]["logins"] += 1
+        database[user_name][LOGIN_KEY] += 1
         print 'welcome back ' + user_name + '.'
     else:
         database[user_name] = {
-            "logins": 1,
-            "level": 1,
-            "attempts0": 0,
-            "successes0": 0,
-            "times0": [],
-            "attempts1": 0,
-            "successes1": 0,
-            "times1": [],
-            "attempts2": 0,
-            "successes2": 0,
-            "times2": [],
-            "attempts3": 0,
-            "successes3": 0,
-            "times3": [],
-            "attempts4": 0,
-            "successes4": 0,
-            "times4": [],
-            "attempts5": 0,
-            "successes5": 0,
-            "times5": [],
-            "attempts6": 0,
-            "successes6": 0,
-            "times6": [],
-            "attempts7": 0,
-            "successes7": 0,
-            "times7": [],
-            "attempts8": 0,
-            "successes8": 0,
-            "times8": [],
-            "attempts9": 0,
-            "successes9": 0,
-            "times9": [],
+            LOGIN_KEY: 1,
+            ATTEMPTS_KEY[0]: 0,
+            SUCCESSES_KEY[0]: 0,
+            ATTEMPTS_KEY[1]: 0,
+            SUCCESSES_KEY[1]: 0,
+            ATTEMPTS_KEY[2]: 0,
+            SUCCESSES_KEY[2]: 0,
+            ATTEMPTS_KEY[3]: 0,
+            SUCCESSES_KEY[3]: 0,
+            ATTEMPTS_KEY[4]: 0,
+            SUCCESSES_KEY[4]: 0,
+            ATTEMPTS_KEY[5]: 0,
+            SUCCESSES_KEY[5]: 0,
+            ATTEMPTS_KEY[6]: 0,
+            SUCCESSES_KEY[6]: 0,
+            ATTEMPTS_KEY[7]: 0,
+            SUCCESSES_KEY[7]: 0,
+            ATTEMPTS_KEY[8]: 0,
+            SUCCESSES_KEY[8]: 0,
+            ATTEMPTS_KEY[9]: 0,
+            SUCCESSES_KEY[9]: 0,
         }
         print 'welcome ' + user_name + '.'
 

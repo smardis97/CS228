@@ -159,7 +159,7 @@ def set_round_length():
 
 window = PYGAME_WINDOW()
 user = dict.start_up()
-dict.check_user(user)
+dict.auto_login(user)
 program_state = 0
 clf = pickle.load(open("{}{}".format(constants.DATA_PATH, constants.NN_CLASSIFIER_FILE), 'rb'))
 test_data = np.zeros((1, 30), dtype='f')

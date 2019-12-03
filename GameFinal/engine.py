@@ -14,20 +14,22 @@ import numpy as np
 import time
 import math
 import pickle
+import dict
 
 
 class GameEngine:
     def __init__(self):
+        dict.start_up()
         self.game_objects = []
         self.background_objects = []
         self.player = game_object.Player()
+        self.current_user = None
         self.window = graphics.GraphicsEngine()
         self.gui = graphics.GUI(self.window, self)
         self.game_state = constants.GAME_MENU
         self.controller = Leap.Controller()
         self.game_start = time.time()
         self.save_number = 0
-        self.opacity_number = 0
         self.previous_number = -1
         self.current_number = -1
         self.correct_count = constants.CORRECT_COUNT
@@ -66,14 +68,28 @@ class GameEngine:
         self.choose_next_number()
         self.spawn_stars()
 
+    def attempt_increment(self):
+        if self.current_user is not None:
+            dict.database[self.current_user][constants.ATTEMPTS_KEY[self.current_number]] += 1
+
+    def success_increment(self):
+        if self.current_user is not None:
+            dict.database[self.current_user][constants.SUCCESSES_KEY[self.current_number]] += 1
+
+    def switch_users(self, new_user):
+        dict.save()
+        self.current_user = dict.login(new_user)
+
     def initialize_game(self):
+        for key in self.key_status:
+            self.key_status[key] = False
         del self.game_objects[:]
         self.game_objects = []
         self.player.set_velocity(0, 0)
+        self.player.angular_velocity = 0
+        self.player.heading = 0
         self.player.reset_position()
         self.game_start = time.time()
-        for i in range(4):
-            self.spawn_asteroid()
         self.game_state = constants.GAME_PLAY
         self.gui.menu_state = constants.MENU_NONE
 
@@ -94,7 +110,9 @@ class GameEngine:
             self.next_bone_index = 0
             self.handle_frame(frame)
             self.test_network()
-        self.gui.update(self.current_number, self.opacity_number)
+        self.gui.update(self.current_number,
+                        dict.database[self.current_user][constants.SUCCESSES_KEY[self.current_number]]
+                        if self.current_user is not None else 0)
         self.draw_objects()
         self.gui.draw_gui()
         self.move_objects()
@@ -126,17 +144,19 @@ class GameEngine:
     def choose_next_number(self):
         while self.current_number == self.previous_number:
             self.current_number = random.randint(0, 9)
+        self.attempt_increment()
 
     def test_network(self):
-        self.test_data = utility.center_data(self.test_data)
-        if self.current_number == self.classifier.Predict(self.test_data):
-            self.correct_count -= 1
-            if self.correct_count == 0:
-                self.previous_number = self.current_number
-                self.choose_next_number()
-                self.add_bullet()
-                self.correct_count = constants.CORRECT_COUNT
-                self.opacity_number += 1
+        if self.game_state == constants.GAME_PLAY:
+            self.test_data = utility.center_data(self.test_data)
+            if self.current_number == self.classifier.Predict(self.test_data):
+                self.correct_count -= 1
+                if self.correct_count == 0:
+                    self.success_increment()
+                    self.previous_number = self.current_number
+                    self.choose_next_number()
+                    self.add_bullet()
+                    self.correct_count = constants.CORRECT_COUNT
 
     def key_listener(self, event):
         if self.game_state == constants.GAME_PLAY:
@@ -170,7 +190,7 @@ class GameEngine:
                     gesture_data[f][b][1][0] = bone.next_joint[0]
                     gesture_data[f][b][1][1] = bone.next_joint[1]
                     gesture_data[f][b][1][2] = bone.next_joint[2]
-            pickle_out = open("{}{}".format(constants.DATA_PATH, "example_{}.dat".format(self.save_number)), "wb")
+            pickle_out = open("{}{}".format(constants.DATA_PATH, "example_{}.dat".format(self.save_number % 10)), "wb")
             pickle.dump(gesture_data, pickle_out)
             print "SAVED"
             pickle_out.close()
@@ -206,6 +226,9 @@ class GameEngine:
 
     def check_collisions(self):
         for object_1 in self.game_objects:
+            if object_1.test_collide(self.player) and self.game_state == constants.GAME_PLAY:
+                self.game_state = constants.GAME_MENU
+                self.gui.state_change(constants.MENU_OVER)
             for object_2 in self.game_objects[self.game_objects.index(object_1)+1:]:
                 if object_1.test_collide(object_2):
                     if type(object_1) == game_object.Bullet:
@@ -237,9 +260,6 @@ class GameEngine:
         x_pos = random.randint(- constants.ASTEROID_MAX_RADIUS, constants.ASTEROID_MAX_RADIUS)
         y_pos = random.randint(- constants.ASTEROID_MAX_RADIUS, constants.ASTEROID_MAX_RADIUS)
         return x_pos, y_pos
-
-    def collect_garbage(self):
-        pass
 
     def input_update(self):
         if self.key_status[ord('a')]:

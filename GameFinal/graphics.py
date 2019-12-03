@@ -56,19 +56,26 @@ class GUI:
         self.window = window
         self.menu_state = constants.MENU_MAIN
         self.menu_window = pygame.Surface(constants.GUI_WINDOW_DIMENSIONS)
-        self.menu_window.fill((0, 0, 0))
-        self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH), pygame.SRCALPHA)
-        self.hand_window.fill((255, 255, 255))
+        self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
         self.current_number = -1
         self.current_success = 0
         self.opacity = 0
         self.objects = [[], []]
         self.interactable = []
+        self.error = ""
         self.labels = []
         self.examples = [pickle.load(open("{}example_{}.dat".format(constants.DATA_PATH, i))) for i in range(10)]
         self.build_gui()
 
+    def clear_error(self):
+        self.error = ""
+
+    def set_error(self, message):
+        self.error = message
+        self.build_gui()
+
     def state_change(self, new_state):
+        self.clear_error()
         self.menu_state = new_state
         self.build_gui()
 
@@ -127,6 +134,9 @@ class GUI:
             self.labels.append(Label((menu_center_x, 30),
                                      constants.GUI_LABEL_TEXT_COLOR, "PROFILE LOGIN"))
 
+            self.labels.append(Label((menu_center_x, menu_center_y - button_y_interval),
+                                     constants.GUI_ERROR_TEXT_COLOR, self.error))
+
             self.interactable.append(Button((menu_center_x, menu_center_y),
                                             "NEW PROFILE",
                                             buttons.new_char))
@@ -148,6 +158,9 @@ class GUI:
             self.labels.append(Label((menu_center_x, 30),
                                      constants.GUI_LABEL_TEXT_COLOR, "NEW PROFILE"))
 
+            self.labels.append(Label((menu_center_x, menu_center_y - button_y_interval),
+                                     constants.GUI_ERROR_TEXT_COLOR, self.error))
+
             self.interactable.append(Button((menu_center_x, menu_center_y + button_y_interval),
                                             "CONFIRM",
                                             buttons.text_confirm))
@@ -159,8 +172,21 @@ class GUI:
             self.interactable.append(TextBox((menu_center_x, menu_center_y - menu_center_y / 2)))
         elif self.menu_state == constants.MENU_SETTINGS:
             pass
-        else:
-            pass
+        elif self.menu_state == constants.MENU_OVER:
+            menu_center_x = constants.GUI_WINDOW_DIMENSIONS[0] / 2
+            menu_center_y = constants.GUI_WINDOW_DIMENSIONS[1] / 2
+            button_y_interval = constants.BUTTON_DIMENSIONS[1] + 10
+
+            self.labels.append(Label((menu_center_x, 30),
+                                     constants.GUI_ERROR_TEXT_COLOR, "GAME OVER"))
+
+            self.interactable.append(Button((menu_center_x, menu_center_y),
+                                            "NEW GAME",
+                                            buttons.play))
+
+            self.interactable.append(Button((menu_center_x, menu_center_y + button_y_interval),
+                                            "MAIN MENU",
+                                            buttons.cancel))
 
     def add_object(self, obj, i):
         self.objects[i].append(obj)
