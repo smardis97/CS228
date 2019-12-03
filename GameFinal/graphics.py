@@ -54,7 +54,7 @@ class GUI:
     def __init__(self, window, parent):
         self.parent = parent
         self.window = window
-        self.menu_state = constants.MENU_MAIN
+        self.menu_state = constants.MENU_LOGIN
         self.menu_window = pygame.Surface(constants.GUI_WINDOW_DIMENSIONS)
         self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
         self.current_number = -1

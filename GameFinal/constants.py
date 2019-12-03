@@ -1,6 +1,8 @@
 import settable
 import pygame
 
+DEBUG = False
+
 PYGAME_WINDOW_WIDTH = 1280
 PYGAME_WINDOW_DEPTH = 768
 
