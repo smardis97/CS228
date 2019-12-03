@@ -1,8 +1,13 @@
-import pygame
-import pickle
-import constants
-import utility
+# Built-in Imports
 import abc
+import pickle
+
+# Third-party Imports
+import pygame
+
+# Local Imports
+from constants import *
+import utility
 import settable
 import buttons
 
@@ -10,7 +15,7 @@ import buttons
 class GraphicsEngine:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((constants.PYGAME_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
+        self.screen = pygame.display.set_mode((PYGAME_WINDOW_WIDTH, PYGAME_WINDOW_DEPTH))
         self.layers = [[] for i in range(10)]
 
     def draw_example_bone(self, base, tip, bone_type):
@@ -36,8 +41,8 @@ class GraphicsEngine:
 
     @staticmethod
     def arena_to_window(point):
-        new_point = (point[0] - constants.ASTEROID_MAX_RADIUS + constants.GAME_WINDOW_LEFT_EDGE[settable.HAND_MODE],
-                     point[1] - constants.ASTEROID_MAX_RADIUS)
+        new_point = (point[0] - ASTEROID_MAX_RADIUS + GAME_WINDOW_LEFT_EDGE[settable.HAND_MODE],
+                     point[1] - ASTEROID_MAX_RADIUS)
         return new_point
 
     @classmethod
@@ -54,9 +59,9 @@ class GUI:
     def __init__(self, window, parent):
         self.parent = parent
         self.window = window
-        self.menu_state = constants.MENU_LOGIN
-        self.menu_window = pygame.Surface(constants.GUI_WINDOW_DIMENSIONS)
-        self.hand_window = pygame.Surface((constants.HAND_WINDOW_WIDTH, constants.PYGAME_WINDOW_DEPTH))
+        self.menu_state = MENU_LOGIN
+        self.menu_window = pygame.Surface(GUI_WINDOW_DIMENSIONS)
+        self.hand_window = pygame.Surface((HAND_WINDOW_WIDTH, PYGAME_WINDOW_DEPTH))
         self.current_number = -1
         self.current_success = 0
         self.opacity = 0
@@ -64,7 +69,7 @@ class GUI:
         self.interactable = []
         self.error = ""
         self.labels = []
-        self.examples = [pickle.load(open("{}example_{}.dat".format(constants.DATA_PATH, i))) for i in range(10)]
+        self.examples = [pickle.load(open("{}example_{}.dat".format(DATA_PATH, i))) for i in range(10)]
         self.build_gui()
 
     def clear_error(self):
@@ -80,7 +85,7 @@ class GUI:
         self.build_gui()
 
     def key_listener(self, event):
-        if self.menu_state == constants.MENU_LOGIN or self.menu_state == constants.MENU_NEW_CHAR:
+        if self.menu_state == MENU_LOGIN or self.menu_state == MENU_NEW_CHAR:
             for inter in self.interactable:
                 if type(inter) == TextBox:
                     inter.input(event)
@@ -99,13 +104,13 @@ class GUI:
         self.interactable = []
         del self.labels[:]
         self.labels = []
-        if self.menu_state == constants.MENU_MAIN:
-            button_x_pos = constants.GUI_WINDOW_DIMENSIONS[0] / 2
-            button_y_start = constants.GUI_WINDOW_DIMENSIONS[1] / 2
-            button_y_interval = constants.BUTTON_DIMENSIONS[1] + 10
+        if self.menu_state == MENU_MAIN:
+            button_x_pos = GUI_WINDOW_DIMENSIONS[0] / 2
+            button_y_start = GUI_WINDOW_DIMENSIONS[1] / 2
+            button_y_interval = BUTTON_DIMENSIONS[1] + 10
 
-            self.labels.append(Label((constants.GUI_WINDOW_DIMENSIONS[0] / 2, 30),
-                                     constants.GUI_LABEL_TEXT_COLOR, "MAIN MENU"))
+            self.labels.append(Label((GUI_WINDOW_DIMENSIONS[0] / 2, 30),
+                                     GUI_LABEL_TEXT_COLOR, "MAIN MENU"))
 
             self.interactable.append(Button((button_x_pos, button_y_start),
                                             "NEW GAME",
@@ -126,16 +131,16 @@ class GUI:
             self.interactable.append(Button((button_x_pos, button_y_start + 4 * button_y_interval),
                                             "EXIT",
                                             buttons.quit_button))
-        elif self.menu_state == constants.MENU_LOGIN:
-            menu_center_x = constants.GUI_WINDOW_DIMENSIONS[0] / 2
-            menu_center_y = constants.GUI_WINDOW_DIMENSIONS[1] / 2
-            button_y_interval = constants.BUTTON_DIMENSIONS[1] + 10
+        elif self.menu_state == MENU_LOGIN:
+            menu_center_x = GUI_WINDOW_DIMENSIONS[0] / 2
+            menu_center_y = GUI_WINDOW_DIMENSIONS[1] / 2
+            button_y_interval = BUTTON_DIMENSIONS[1] + 10
 
             self.labels.append(Label((menu_center_x, 30),
-                                     constants.GUI_LABEL_TEXT_COLOR, "PROFILE LOGIN"))
+                                     GUI_LABEL_TEXT_COLOR, "PROFILE LOGIN"))
 
             self.labels.append(Label((menu_center_x, menu_center_y - button_y_interval),
-                                     constants.GUI_ERROR_TEXT_COLOR, self.error))
+                                     GUI_ERROR_TEXT_COLOR, self.error))
 
             self.interactable.append(Button((menu_center_x, menu_center_y),
                                             "NEW PROFILE",
@@ -150,16 +155,16 @@ class GUI:
                                             buttons.cancel))
 
             self.interactable.append(TextBox((menu_center_x, menu_center_y - menu_center_y / 2)))
-        elif self.menu_state == constants.MENU_NEW_CHAR:
-            menu_center_x = constants.GUI_WINDOW_DIMENSIONS[0] / 2
-            menu_center_y = constants.GUI_WINDOW_DIMENSIONS[1] / 2
-            button_y_interval = constants.BUTTON_DIMENSIONS[1] + 10
+        elif self.menu_state == MENU_NEW_CHAR:
+            menu_center_x = GUI_WINDOW_DIMENSIONS[0] / 2
+            menu_center_y = GUI_WINDOW_DIMENSIONS[1] / 2
+            button_y_interval = BUTTON_DIMENSIONS[1] + 10
 
             self.labels.append(Label((menu_center_x, 30),
-                                     constants.GUI_LABEL_TEXT_COLOR, "NEW PROFILE"))
+                                     GUI_LABEL_TEXT_COLOR, "NEW PROFILE"))
 
             self.labels.append(Label((menu_center_x, menu_center_y - button_y_interval),
-                                     constants.GUI_ERROR_TEXT_COLOR, self.error))
+                                     GUI_ERROR_TEXT_COLOR, self.error))
 
             self.interactable.append(Button((menu_center_x, menu_center_y + button_y_interval),
                                             "CONFIRM",
@@ -170,15 +175,15 @@ class GUI:
                                             buttons.cancel))
 
             self.interactable.append(TextBox((menu_center_x, menu_center_y - menu_center_y / 2)))
-        elif self.menu_state == constants.MENU_SETTINGS:
+        elif self.menu_state == MENU_SETTINGS:
             pass
-        elif self.menu_state == constants.MENU_OVER:
-            menu_center_x = constants.GUI_WINDOW_DIMENSIONS[0] / 2
-            menu_center_y = constants.GUI_WINDOW_DIMENSIONS[1] / 2
-            button_y_interval = constants.BUTTON_DIMENSIONS[1] + 10
+        elif self.menu_state == MENU_OVER:
+            menu_center_x = GUI_WINDOW_DIMENSIONS[0] / 2
+            menu_center_y = GUI_WINDOW_DIMENSIONS[1] / 2
+            button_y_interval = BUTTON_DIMENSIONS[1] + 10
 
             self.labels.append(Label((menu_center_x, 30),
-                                     constants.GUI_ERROR_TEXT_COLOR, "GAME OVER"))
+                                     GUI_ERROR_TEXT_COLOR, "GAME OVER"))
 
             self.interactable.append(Button((menu_center_x, menu_center_y),
                                             "NEW GAME",
@@ -210,21 +215,21 @@ class GUI:
         self.draw_example()
 
     def draw_gui(self):
-        self.menu_window.fill(constants.GUI_WINDOW_COLOR)
-        self.hand_window.fill(constants.HAND_WINDOW_COLOR)
+        self.menu_window.fill(GUI_WINDOW_COLOR)
+        self.hand_window.fill(HAND_WINDOW_COLOR)
         text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), 40),
                                        str(self.current_number), True, (0, 0, 0))
         self.hand_window.blit(text, (10, 10))
         for layer in self.objects:
             for obj in layer:
                 obj.draw(self.hand_window)
-        self.window.screen.blit(self.hand_window, constants.HAND_WINDOW_POSITION[settable.HAND_MODE])
-        if self.menu_state is not constants.MENU_NONE:
+        self.window.screen.blit(self.hand_window, HAND_WINDOW_POSITION[settable.HAND_MODE])
+        if self.menu_state is not MENU_NONE:
             for label in self.labels:
                 self.menu_window.blit(label.draw(), label.get_position())
             for inter in self.interactable:
                 self.menu_window.blit(inter.draw(), inter.get_position())
-            self.window.screen.blit(self.menu_window, constants.GUI_WINDOW_POSITION)
+            self.window.screen.blit(self.menu_window, GUI_WINDOW_POSITION)
         self.clear()
 
     def draw_example_bone(self, base, tip, bone_type):
@@ -236,14 +241,14 @@ class GUI:
     @staticmethod
     def leap_to_window(point):
         new_point = (
-            utility.scale_to_range(point[0], constants.LEAP_VISION_MIN_COORDS[0], constants.LEAP_VISION_MAX_COORDS[0],
-                                   - constants.HAND_GRAPHICAL_CENTER[0],
-                                   constants.HAND_REGION_DIMENSIONS[0] - constants.HAND_GRAPHICAL_CENTER[0])
-            + constants.HAND_CENTERING_ADJUST[0],
-            utility.scale_to_range(point[2], constants.LEAP_VISION_MIN_COORDS[2], constants.LEAP_VISION_MAX_COORDS[2],
-                                   - constants.HAND_GRAPHICAL_CENTER[1],
-                                   constants.HAND_REGION_DIMENSIONS[1] - constants.HAND_GRAPHICAL_CENTER[1])
-            + constants.HAND_CENTERING_ADJUST[1]
+            utility.scale_to_range(point[0], LEAP_VISION_MIN_COORDS[0], LEAP_VISION_MAX_COORDS[0],
+                                   - HAND_GRAPHICAL_CENTER[0],
+                                   HAND_REGION_DIMENSIONS[0] - HAND_GRAPHICAL_CENTER[0])
+            + HAND_CENTERING_ADJUST[0],
+            utility.scale_to_range(point[2], LEAP_VISION_MIN_COORDS[2], LEAP_VISION_MAX_COORDS[2],
+                                   - HAND_GRAPHICAL_CENTER[1],
+                                   HAND_REGION_DIMENSIONS[1] - HAND_GRAPHICAL_CENTER[1])
+            + HAND_CENTERING_ADJUST[1]
         )
         return new_point
 
@@ -273,14 +278,14 @@ class MenuObject:
 
 
 class Button(MenuObject):
-    def __init__(self, position, text, func, color=constants.GUI_BUTTON_COLOR, highlight=constants.GUI_BUTTON_HIGHLIGHT):
+    def __init__(self, position, text, func, color=GUI_BUTTON_COLOR, highlight=GUI_BUTTON_HIGHLIGHT):
         MenuObject.__init__(self, position, color)
-        self.absolute_pos = utility.vector_add(constants.GUI_WINDOW_POSITION, self.get_position())
-        self.rect = pygame.Surface(constants.BUTTON_DIMENSIONS)
+        self.absolute_pos = utility.vector_add(GUI_WINDOW_POSITION, self.get_position())
+        self.rect = pygame.Surface(BUTTON_DIMENSIONS)
         self.text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(),
-                                                             constants.BUTTON_LABEL_SIZE
+                                                             BUTTON_LABEL_SIZE
                                                              ),
-                                            text, True, constants.GUI_BUTTON_TEXT_COLOR)
+                                            text, True, GUI_BUTTON_TEXT_COLOR)
         self.highlight = highlight if highlight is not None else color
         self.action = func
         self.hover = False
@@ -292,8 +297,8 @@ class Button(MenuObject):
         return self.rect
 
     def get_position(self):
-        return self.position[0] - (constants.BUTTON_DIMENSIONS[0] / 2), \
-               self.position[1] - (constants.BUTTON_DIMENSIONS[1] / 2)
+        return self.position[0] - (BUTTON_DIMENSIONS[0] / 2), \
+               self.position[1] - (BUTTON_DIMENSIONS[1] / 2)
 
     def text_offset(self):
         x_offset = (self.rect.get_size()[0] / 2) - (self.text.get_size()[0] / 2)
@@ -316,7 +321,7 @@ class Button(MenuObject):
 class Label(MenuObject):
     def __init__(self, position, color, text):
         MenuObject.__init__(self, position, color)
-        self.text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), constants.MENU_LABEL_SIZE),
+        self.text = pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), MENU_LABEL_SIZE),
                                             text, True, self.color)
 
     def draw(self):
@@ -333,10 +338,10 @@ class Label(MenuObject):
 
 
 class TextBox(MenuObject):
-    def __init__(self, position, color=constants.TEXT_BOX_COLOR, highlight=constants.TEXT_BOX_HIGHLIGHT, activec=constants.TEXT_BOX_ACTIVE):
+    def __init__(self, position, color=TEXT_BOX_COLOR, highlight=TEXT_BOX_HIGHLIGHT, activec=TEXT_BOX_ACTIVE):
         MenuObject.__init__(self, position, color)
-        self.absolute_pos = utility.vector_add(constants.GUI_WINDOW_POSITION, self.get_position())
-        self.rect = pygame.Surface(constants.TEXT_BOX_DIMENSIONS)
+        self.absolute_pos = utility.vector_add(GUI_WINDOW_POSITION, self.get_position())
+        self.rect = pygame.Surface(TEXT_BOX_DIMENSIONS)
         self.text_content = ""
         self.highlight = highlight
         self.active_color = activec
@@ -357,8 +362,8 @@ class TextBox(MenuObject):
         return self.rect
 
     def get_position(self):
-        return self.position[0] - (constants.TEXT_BOX_DIMENSIONS[0] / 2), \
-               self.position[1] - (constants.TEXT_BOX_DIMENSIONS[1] / 2)
+        return self.position[0] - (TEXT_BOX_DIMENSIONS[0] / 2), \
+               self.position[1] - (TEXT_BOX_DIMENSIONS[1] / 2)
 
     def get_color(self):
         if self.active:
@@ -370,8 +375,8 @@ class TextBox(MenuObject):
         return color
 
     def get_text(self):
-        return pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), constants.TEXT_BOX_TEXT_SIZE),
-                                       self.text_content, True, constants.TEXT_BOX_TEXT_COLOR)
+        return pygame.font.Font.render(pygame.font.Font(pygame.font.get_default_font(), TEXT_BOX_TEXT_SIZE),
+                                       self.text_content, True, TEXT_BOX_TEXT_COLOR)
 
     def text_offset(self):
         x_offset = (self.rect.get_size()[0] / 2) - (self.get_text().get_size()[0] / 2)

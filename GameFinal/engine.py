@@ -48,8 +48,8 @@ class GameEngine:
         #
         # MAIN GAME OBJECTS -------------------------------------------------------------------------- MAIN GAME OBJECTS
         #
-        self.window = graphics.GraphicsEngine()
-        self.gui = graphics.GUI(self.window, self)
+        self.window = GraphicsEngine()
+        self.gui = GUI(self.window, self)
         self.game_objects = []
         self.background_objects = []
         self.player = Player()
@@ -263,14 +263,14 @@ class GameEngine:
             bone_type   (int):          Int representing which bone in the finger bone describes.
         """
         base = bone.prev_joint  # joint of current bone that is closest to the wrist
-        base = graphics.GUI.leap_to_window(base)  # rescale to be relative to the gui hand_window
+        base = GUI.leap_to_window(base)  # rescale to be relative to the gui hand_window
         tip = bone.next_joint  # joint of current bone that is furthest from the wrist
         if bone_type == 0 or bone_type == 3:  # only the first knuckle and finger tip are stored in test_data
             self.test_data[0, self.next_bone_index] = bone.next_joint[0]
             self.test_data[0, self.next_bone_index + 1] = bone.next_joint[1]
             self.test_data[0, self.next_bone_index + 2] = bone.next_joint[2]
             self.next_bone_index = self.next_bone_index + 3
-        tip = graphics.GUI.leap_to_window(tip)  # rescale to be relative to the gui hand_window
+        tip = GUI.leap_to_window(tip)  # rescale to be relative to the gui hand_window
         self.gui.draw_bone(base, tip, bone_type)
 
     def test_network(self):

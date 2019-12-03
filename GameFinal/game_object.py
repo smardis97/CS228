@@ -1,10 +1,13 @@
-import constants
-import utility
+# Built-in Imports
 import abc
 import random
-import settable
 import math
-import graphics
+
+# Local Imports
+from constants import *
+from graphics import *
+import utility
+import settable
 
 
 class GameObject:
@@ -21,7 +24,6 @@ class GameObject:
         }
         self.angular_velocity = 0
         self.headings_to_vertices = []  # list of tuples: (heading, distance)
-        self.health = 100
         self.color = color
         self.thickness = thickness
         self.max_radius = max_radius
@@ -40,9 +42,6 @@ class GameObject:
     def get_angular_velocity(self):
         return self.angular_velocity
 
-    def get_health(self):
-        return self.health
-
     def get_radius(self):
         return self.collide_radius
 
@@ -50,7 +49,7 @@ class GameObject:
         return not self.non_collide
 
     def set_velocity(self, heading, magnitude):
-        heading = heading % constants.CIRCLE_DEG
+        heading = heading % CIRCLE_DEG
         magnitude = min([magnitude, self.max_velocity])
         new_vel = utility.polar_to_cartesian((heading, magnitude))
         self.velocity["x-component"] = new_vel[0]
@@ -62,21 +61,21 @@ class GameObject:
         self.set_velocity(new_heading, new_magnitude)
 
     def get_point_from_vertex(self, vertex):
-        vector = ((self.heading + vertex[0]) % constants.CIRCLE_DEG, vertex[1])
+        vector = ((self.heading + vertex[0]) % CIRCLE_DEG, vertex[1])
         vector = utility.polar_to_cartesian(vector)
         vector = utility.vector_add((self.position[0], self.position[1]), vector)
         return vector
 
     def edge_wrap(self):
-        if self.position[0] > constants.GAME_ARENA_DIMENSIONS[0]:
-            self.position[0] = self.position[0] - constants.GAME_ARENA_DIMENSIONS[0]
+        if self.position[0] > GAME_ARENA_DIMENSIONS[0]:
+            self.position[0] = self.position[0] - GAME_ARENA_DIMENSIONS[0]
         elif self.position[0] < 0:
-            self.position[0] = constants.GAME_ARENA_DIMENSIONS[0] + self.position[0]
+            self.position[0] = GAME_ARENA_DIMENSIONS[0] + self.position[0]
 
-        if self.position[1] > constants.GAME_ARENA_DIMENSIONS[1]:
-            self.position[1] = self.position[1] - constants.GAME_ARENA_DIMENSIONS[1]
+        if self.position[1] > GAME_ARENA_DIMENSIONS[1]:
+            self.position[1] = self.position[1] - GAME_ARENA_DIMENSIONS[1]
         elif self.position[1] < 0:
-            self.position[1] = constants.GAME_ARENA_DIMENSIONS[1] + self.position[1]
+            self.position[1] = GAME_ARENA_DIMENSIONS[1] + self.position[1]
 
     @abc.abstractmethod
     def update(self):
@@ -89,19 +88,19 @@ class GameObject:
 
 class Player(GameObject):
     def __init__(self):
-        GameObject.__init__(self, constants.PLAYER_START_POSITION, constants.PLAYER_MAX_VEL,
-                            constants.PLAYER_MAX_ANG_VEL, constants.PLAYER_MAX_RADIUS,
-                            settable.PLAYER_COLOR, constants.PLAYER_THICKNESS)
-        self.acceleration = constants.PLAYER_ACCELERATION
-        self.angular_acceleration = constants.PLAYER_ANGULAR_ACCELERATION
-        self.headings_to_vertices = [(0, constants.PLAYER_MAX_RADIUS),
-                                     (140, constants.PLAYER_MAX_RADIUS),
-                                     (180, constants.PLAYER_MAX_RADIUS / 3),
-                                     (220, constants.PLAYER_MAX_RADIUS)]
+        GameObject.__init__(self, PLAYER_START_POSITION, PLAYER_MAX_VEL,
+                            PLAYER_MAX_ANG_VEL, PLAYER_MAX_RADIUS,
+                            settable.PLAYER_COLOR, PLAYER_THICKNESS)
+        self.acceleration = PLAYER_ACCELERATION
+        self.angular_acceleration = PLAYER_ANGULAR_ACCELERATION
+        self.headings_to_vertices = [(0, PLAYER_MAX_RADIUS),
+                                     (140, PLAYER_MAX_RADIUS),
+                                     (180, PLAYER_MAX_RADIUS / 3),
+                                     (220, PLAYER_MAX_RADIUS)]
         self.collide_radius = self.max_radius * 0.75
 
     def reset_position(self):
-        self.position = [constants.PLAYER_START_POSITION[0], constants.PLAYER_START_POSITION[1]]
+        self.position = [PLAYER_START_POSITION[0], PLAYER_START_POSITION[1]]
 
     def thrust(self):
         new_vel = utility.vector_add((self.velocity["x-component"], self.velocity["y-component"]),
@@ -110,16 +109,16 @@ class Player(GameObject):
 
     def turn(self, direction):
         if direction == "right":
-            self.heading = (self.heading + self.angular_acceleration) % constants.CIRCLE_DEG
+            self.heading = (self.heading + self.angular_acceleration) % CIRCLE_DEG
             #self.angular_velocity = min([self.max_angular_velocity, self.angular_velocity + self.angular_acceleration])
         elif direction == "left":
-            self.heading = (self.heading - self.angular_acceleration) % constants.CIRCLE_DEG
+            self.heading = (self.heading - self.angular_acceleration) % CIRCLE_DEG
             #self.angular_velocity = max([-self.max_angular_velocity, self.angular_velocity - self.angular_acceleration])
         else:
             raise NotImplementedError
 
     def update(self):
-        self.heading = (self.heading + self.angular_velocity) % constants.CIRCLE_DEG
+        self.heading = (self.heading + self.angular_velocity) % CIRCLE_DEG
         self.position[0] = self.position[0] + self.velocity["x-component"]
         self.position[1] = self.position[1] + self.velocity["y-component"]
         self.edge_wrap()
@@ -127,9 +126,9 @@ class Player(GameObject):
     def draw_self_to_layer(self, graphic_engine, layer):
         for vertex in self.headings_to_vertices:
             graphic_engine.add_to_layer(layer,
-                                        graphics.Line(self.get_point_from_vertex(vertex),  # Line.start
-                                                      self.get_point_from_vertex(utility.get_next(vertex, self.headings_to_vertices)),  # Line.end
-                                                      self.color, self.thickness))  # Line.color, Line.thickness)
+                                        Line(self.get_point_from_vertex(vertex),  # Line.start
+                                             self.get_point_from_vertex(utility.get_next(vertex, self.headings_to_vertices)),  # Line.end
+                                             self.color, self.thickness))  # Line.color, Line.thickness)
 
     def brake(self):
         if self.angular_velocity < 0:
@@ -144,8 +143,8 @@ class Player(GameObject):
 
 class Asteroid(GameObject):
     def __init__(self, position, velocity, ang_vel):
-        GameObject.__init__(self, position, constants.ASTEROID_MAX_VEL, constants.ASTEROID_MAX_ANG_VEL,
-                            constants.ASTEROID_MAX_RADIUS, settable.ASTEROID_COLOR, constants.ASTEROID_THICKNESS)
+        GameObject.__init__(self, position, ASTEROID_MAX_VEL, ASTEROID_MAX_ANG_VEL,
+                            ASTEROID_MAX_RADIUS, settable.ASTEROID_COLOR, ASTEROID_THICKNESS)
         self.velocity["x-component"] = velocity[0]
         self.velocity["y-component"] = velocity[1]
         self.angular_velocity = min([ang_vel, self.max_angular_velocity])
@@ -167,19 +166,19 @@ class Asteroid(GameObject):
 
     def build_asteroid(self):
         if not self.has_built:
-            num_vertices = random.randint(constants.ASTEROID_MIN_VERTICES, constants.ASTEROID_MAX_VERTICES)
-            separation_angle = constants.CIRCLE_DEG / num_vertices
+            num_vertices = random.randint(ASTEROID_MIN_VERTICES, ASTEROID_MAX_VERTICES)
+            separation_angle = CIRCLE_DEG / num_vertices
             for v in range(num_vertices):
                 vertex_heading = random.randint(math.floor(separation_angle * v - separation_angle * 0.25),
                                                 math.ceil(separation_angle * v + separation_angle * 0.25))
-                vertex_radius = random.randint(constants.ASTEROID_MIN_RADIUS, self.max_radius)
+                vertex_radius = random.randint(ASTEROID_MIN_RADIUS, self.max_radius)
                 self.headings_to_vertices.append((vertex_heading, vertex_radius))
         self.has_built = True
 
     def update(self):
         if self.recent_collide > 0:
             self.recent_collide -= 1
-        self.heading = (self.heading + self.angular_velocity) % constants.CIRCLE_DEG
+        self.heading = (self.heading + self.angular_velocity) % CIRCLE_DEG
         self.position[0] = self.position[0] + self.velocity["x-component"]
         self.position[1] = self.position[1] + self.velocity["y-component"]
         self.edge_wrap()
@@ -187,16 +186,16 @@ class Asteroid(GameObject):
     def draw_self_to_layer(self, graphic_engine, layer):
         for vertex in self.headings_to_vertices:
             graphic_engine.add_to_layer(layer,
-                                        graphics.Line(self.get_point_from_vertex(vertex),  # Line.start
-                                                      self.get_point_from_vertex(utility.get_next(vertex, self.headings_to_vertices)),  # Line.end
-                                                      self.color, self.thickness))  # Line.color, Line.thickness)
+                                        Line(self.get_point_from_vertex(vertex),  # Line.start
+                                             self.get_point_from_vertex(utility.get_next(vertex, self.headings_to_vertices)),  # Line.end
+                                             self.color, self.thickness))  # Line.color, Line.thickness)
 
 
 class Bullet(GameObject):
     def __init__(self, heading, position):
-        GameObject.__init__(self, position, constants.BULLET_VEL, constants.BULLET_MAX_ANG_VEL, constants.BULLET_RADIUS, settable.BULLET_COLOR, 0)
+        GameObject.__init__(self, position, BULLET_VEL, BULLET_MAX_ANG_VEL, BULLET_RADIUS, settable.BULLET_COLOR, 0)
         self.set_velocity(heading, self.max_velocity)
-        self.range = constants.BULLET_RANGE
+        self.range = BULLET_RANGE
 
     def update(self):
         self.position[0] = self.position[0] + self.velocity["x-component"]
@@ -206,18 +205,18 @@ class Bullet(GameObject):
             del self
 
     def draw_self_to_layer(self, graphic_engine, layer):
-        graphic_engine.add_to_layer(layer, graphics.Circle(self.position, self.max_radius, self.color))
+        graphic_engine.add_to_layer(layer, Circle(self.position, self.max_radius, self.color))
 
 
 class Snow(GameObject):
     def __init__(self, position):
-        GameObject.__init__(self, position, constants.STAR_MAX_VEL, constants.STAR_MAX_ANG_VEL,
-                            constants.STAR_MAX_RADIUS, settable.STAR_COLOR, 0, False)
-        self.radius = random.randint(constants.STAR_MIN_RADIUS, constants.STAR_MAX_RADIUS)
+        GameObject.__init__(self, position, STAR_MAX_VEL, STAR_MAX_ANG_VEL,
+                            STAR_MAX_RADIUS, settable.STAR_COLOR, 0, False)
+        self.radius = random.randint(STAR_MIN_RADIUS, STAR_MAX_RADIUS)
 
     def update(self, player_vel=None):
         self.position[0] = self.position[0] + self.velocity["x-component"]
         self.position[1] = self.position[1] + self.velocity["y-component"]
 
     def draw_self_to_layer(self, graphic_engine, layer):
-        graphic_engine.add_to_layer(layer, graphics.Circle(self.position, self.radius, self.color))
+        graphic_engine.add_to_layer(layer, Circle(self.position, self.radius, self.color))
