@@ -146,7 +146,7 @@ class GameEngine:
         # Asteroid Spawn Logic
         game_level = self.game_level()
         if self.count_asteroids() < game_level + 3:  # three asteroids to start, +1 every 15 seconds
-            while self.count_asteroids() < 15:  # fifteen asteroids maximum
+            while self.count_asteroids() < min([game_level + 3, 15]):
                 self.spawn_asteroid()
 
         # Leap Motion Logic
@@ -160,10 +160,10 @@ class GameEngine:
                         # number of times the current player has successfully signed the requested number
                         dict.database[self.current_user][SUCCESSES_KEY[self.current_number]]
                         if self.current_user is not None else 0)
-        self.gui.draw_gui()
         self.move_objects()
         self.check_collisions()
         self.draw_objects()
+        self.gui.draw_gui()
         self.input_update()
 
     ####################################################################################################################
@@ -320,7 +320,7 @@ class GameEngine:
         """
         Get the current 'game level' as time since game_start divided by fifteen.
         """
-        return int(math.floor(self.elapsed_time() / 15))
+        return int(math.floor(self.elapsed_time() / 30))
 
     def elapsed_time(self):
         """
@@ -418,8 +418,13 @@ class GameEngine:
             # for all OTHER objects in game_objects
             for object_2 in self.game_objects[self.game_objects.index(object_1) + 1:]:
                 if object_1.test_collide(object_2):
-                    if type(object_1) == Bullet:
-                        del object_2
+                    # print object_1
+                    # print "collides"
+                    # print object_2
+                    # print "\n\n"
+                    if type(object_1) == Bullet or type(object_2) == Bullet:
+                        self.game_objects.remove(object_1)
+                        self.game_objects.remove(object_2)
                     else:
                         # TODO fix asteroid collisions
                         pass

@@ -354,7 +354,8 @@ class TextBox(MenuObject):
                 if len(self.text_content) > 0:
                     self.text_content = self.text_content[:-1]
             elif 'unicode' in key_event.__dict__:
-                self.text_content += key_event.__dict__['unicode']
+                if self.active:
+                    self.text_content += key_event.__dict__['unicode']
 
     def draw(self):
         self.rect.fill(self.get_color())

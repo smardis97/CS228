@@ -27,11 +27,11 @@ class GameObject:
         self.color = color
         self.thickness = thickness
         self.max_radius = max_radius
-        self.collide_radius = 0
+        self.collide_radius = self.max_radius
         self.non_collide = not collidable
 
     def test_collide(self, obj):
-        if utility.calc_distance(self.position, obj.position) < self.collide_radius + obj.get_radius() and\
+        if utility.calc_distance(self.position, obj.position) < (self.collide_radius + obj.get_radius()) and\
            self.can_collide() and obj.can_collide():
             return True
         return False
@@ -196,6 +196,7 @@ class Bullet(GameObject):
         GameObject.__init__(self, position, BULLET_VEL, BULLET_MAX_ANG_VEL, BULLET_RADIUS, settable.BULLET_COLOR, 0)
         self.set_velocity(heading, self.max_velocity)
         self.range = BULLET_RANGE
+        self.collide_radius = BULLET_RADIUS
 
     def update(self):
         self.position[0] = self.position[0] + self.velocity["x-component"]
